@@ -168,14 +168,16 @@ def algo5d():
     print("ranges ilgis:", len(ranges))
 
     sumos_features = pd.concat([sumos.reset_index(drop=True), ranges.reset_index(drop=True)], axis=1)
-    print(sumos_features)
+    model_input = sumos_features.copy()
+    model_input.drop(['starting_nt', 'Chromosome', 'Start', 'End'], axis=1, inplace=True)
+    print(model_input)
 
-    return
     # Skaičiuojam
     kmeans = KMeans(n_clusters=2)
-    kmeans.fit(sumos)
+    kmeans.fit(model_input)
     inertia = kmeans.inertia_
     labels = list(kmeans.labels_)
+    sumos_features['labels'] = kmeans.labels_
     open_ratio = labels.count(1)/len(labels)
 
     a = 10
@@ -190,7 +192,7 @@ def algo5d():
     print(open_ratio)
     print(kmeans.labels_[:1000])
 
-    np.savetxt('labels.dat', kmeans.labels_, fmt='%d', delimiter=',')
+    sumos_features.to_csv('output.csv', sep = '\t')
 
 if __name__ == "__main__":
     algo5d()
