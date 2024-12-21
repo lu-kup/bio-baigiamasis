@@ -55,6 +55,7 @@ def algo1d():
     kmeans.fit(sumos)
     inertia = kmeans.inertia_
     labels = list(kmeans.labels_)
+    sumos['labels'] = labels
     open_ratio = labels.count(1)/len(labels)
 
     a = 10
@@ -71,9 +72,10 @@ def algo1d():
 
     np.savetxt('labels.dat', kmeans.labels_, fmt='%d', delimiter=',')
 
-def algo2d():
-    result = pyreadr.read_r('subset1.rds')
-    df = result[None]
+    return sumos
+
+def algo2d(scale = 1):
+    df = pyreadr.read_r('subset1.rds')[None]
     bin_offset = 0
 
     print("HEAD")
@@ -98,11 +100,7 @@ def algo2d():
     print(sumos.shape)
     print(sumos.dtypes)
 
-    max_mean = sumos['TT_S0'].nlargest(10).mean()
-    print("Max mean", max_mean)
-    scale = sumos['starting_nt'].max() / max_mean
-    print("Scale", scale)
-    sumos['signal'] = sumos['TT_S0'] * scale * 10
+    sumos['signal'] = sumos['TT_S0'] * scale
     sumos.drop(['TT_S0'], axis=1, inplace=True)
 
     print("SUMOS NEW")
@@ -113,6 +111,7 @@ def algo2d():
     kmeans.fit(sumos)
     inertia = kmeans.inertia_
     labels = list(kmeans.labels_)
+    sumos['labels'] = labels
     open_ratio = labels.count(1)/len(labels)
 
     a = 10
@@ -127,9 +126,11 @@ def algo2d():
     print(open_ratio)
     print(kmeans.labels_[:1000])
 
-    np.savetxt('labels.dat', kmeans.labels_, fmt='%d', delimiter=',')
+    sumos.to_csv('output_2d.csv', sep = '\t')
 
-def algo5d():
+    return sumos
+
+def algo5d(scale = 1):
     result = pyreadr.read_r('subset1.rds')
     df = result[None]
     bin_offset = 0
@@ -163,6 +164,22 @@ def algo5d():
     sumos_features = pd.concat([sumos.reset_index(drop=True), ranges.reset_index(drop=True)], axis=1)
     model_input = sumos_features.copy()
     model_input.drop(['starting_nt', 'Chromosome', 'Start', 'End'], axis=1, inplace=True)
+    print("Model input - NO SCALE")
+    print(model_input)
+
+    model_input['genes_scaled'] = model_input['genes'] * scale
+    model_input.drop(['genes'], axis=1, inplace=True)
+
+    model_input['transcripts_scaled'] = model_input['transcripts'] * scale
+    model_input.drop(['transcripts'], axis=1, inplace=True)
+
+    model_input['exons_scaled'] = model_input['exons'] * scale
+    model_input.drop(['exons'], axis=1, inplace=True)
+
+    model_input['CDSs_scaled'] = model_input['CDSs'] * scale
+    model_input.drop(['CDSs'], axis=1, inplace=True)
+
+    print("Model input - SCALED")
     print(model_input)
 
     # Skaičiuojam
@@ -178,7 +195,9 @@ def algo5d():
 
     sumos_features.to_csv('output_5d.csv', sep = '\t')
 
-def algo_prototypes():
+    return sumos_features
+
+def algo_prototypes(gamma = 1):
     result = pyreadr.read_r('subset1.rds')
     df = result[None]
     bin_offset = 0
@@ -215,7 +234,7 @@ def algo_prototypes():
     print(model_input)
 
     # Skaičiuojam
-    kprotos = KPrototypes(n_clusters=2)
+    kprotos = KPrototypes(n_clusters=2, gamma=gamma, verbose=1)
     kprotos.fit(model_input, categorical=[1, 2, 3, 4])
     labels = list(kprotos.labels_)
     sumos_features['labels'] = kprotos.labels_
@@ -226,7 +245,9 @@ def algo_prototypes():
 
     sumos_features.to_csv('output_prototypes.csv', sep = '\t')
 
-def algo_dbscan():
+    return sumos_features
+
+def algo_dbscan(eps=0.05, min_samples=6):
     result = pyreadr.read_r('subset1.rds')
     df = result[None]
     bin_offset = 0
@@ -267,7 +288,7 @@ def algo_dbscan():
     print("Length of input:", len(model_input))
     print("Calculating distances...")
     distance_matrix = gower.gower_matrix(model_input)
-    clustering = DBSCAN(eps=0.05, min_samples=6, metric = "precomputed")
+    clustering = DBSCAN(eps=eps, min_samples=min_samples, metric = "precomputed")
 
     print("Running DBSCAN...")
     clustering.fit(distance_matrix)
@@ -282,5 +303,7 @@ def algo_dbscan():
 
     sumos_features.to_csv('output_dbscan.csv', sep = '\t')
 
+    return sumos_features
+
 if __name__ == "__main__":
-    algo_prototypes()
+    algo5d()

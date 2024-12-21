@@ -9,8 +9,12 @@ CHR18_SIZE = 90720763
 CHR18_SUBSET_SIZE = 25556940
 CHR18_SUBSET_SIZE_ADJ = 25556940 - 10000018
 
-def evaluate(filename = "output_prototypes.csv"):
-    df = pd.read_csv(filename, sep = '\t', index_col=0)
+def evaluate(filename = "output_prototypes.csv", dataframe = None):
+    if dataframe is None:
+        df = pd.read_csv(filename, sep = '\t', index_col=0)
+    else:
+        df = dataframe
+
     input = pr.PyRanges(df)
 
     count0 = len(input[input.labels == 0])
