@@ -25,7 +25,7 @@ def get_ranges():
     from_array = [chromo_start] + breaks
     to_array = breaks + [chromo_end]
 
-    bins = pr.PyRanges(chromosomes="chr18", starts=from_array, ends=to_array)
+    bins = pr.PyRanges(chromosomes="18", starts=from_array, ends=to_array)
 
     overlaps_result = pr.count_overlaps(grs, bins)
     overlaps_df = overlaps_result.df

@@ -283,4 +283,4 @@ def algo_dbscan():
     sumos_features.to_csv('output_dbscan.csv', sep = '\t')
 
 if __name__ == "__main__":
-    algo_dbscan()
+    algo_prototypes()
