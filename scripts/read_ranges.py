@@ -6,7 +6,7 @@ import numpy as np
 #pd.set_option('display.max_rows', 500)
 
 def get_ranges():
-    gr = pr.read_gtf("gencode_chr18.gtf")
+    gr = pr.read_gtf("../inputs/gencode_chr18.gtf")
 
     # {gene,transcript,exon,CDS,UTR,start_codon,stop_codon,Selenocysteine}
     genes = gr[gr.Feature == 'gene']

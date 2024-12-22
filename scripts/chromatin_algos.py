@@ -25,7 +25,7 @@ def add_bins(offset, chromosome):
     return bins
 
 def algo1d():
-    result = pyreadr.read_r('subset1.rds')
+    result = pyreadr.read_r('../inputs/subset1.rds')
     df = result[None]
     bin_offset = 0
 
@@ -75,7 +75,7 @@ def algo1d():
     return sumos
 
 def algo2d(scale = 1):
-    df = pyreadr.read_r('subset1.rds')[None]
+    df = pyreadr.read_r('../inputs/subset1.rds')[None]
     bin_offset = 0
 
     print("HEAD")
@@ -131,7 +131,7 @@ def algo2d(scale = 1):
     return sumos
 
 def algo5d(scale = 1):
-    result = pyreadr.read_r('subset1.rds')
+    result = pyreadr.read_r('../inputs/subset1.rds')
     df = result[None]
     bin_offset = 0
 
@@ -198,7 +198,7 @@ def algo5d(scale = 1):
     return sumos_features
 
 def algo_prototypes(gamma = 1):
-    result = pyreadr.read_r('subset1.rds')
+    result = pyreadr.read_r('../inputs/subset1.rds')
     df = result[None]
     bin_offset = 0
 
@@ -248,7 +248,7 @@ def algo_prototypes(gamma = 1):
     return sumos_features
 
 def algo_dbscan(eps=0.05, min_samples=6):
-    result = pyreadr.read_r('subset1.rds')
+    result = pyreadr.read_r('../inputs/subset1.rds')
     df = result[None]
     bin_offset = 0
 

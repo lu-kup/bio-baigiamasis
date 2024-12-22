@@ -9,7 +9,7 @@ CHR18_SIZE = 90720763
 CHR18_SUBSET_SIZE = 25556940
 CHR18_SUBSET_SIZE_ADJ = 25556940 - 10000018
 
-def evaluate(filename = "output_prototypes.csv", dataframe = None, model_name = ''):
+def evaluate(filename = "../outputs/output_prototypes.csv", dataframe = None, model_name = ''):
     if dataframe is None:
         df = pd.read_csv(filename, sep = '\t', index_col=0)
     else:
@@ -29,11 +29,11 @@ def evaluate(filename = "output_prototypes.csv", dataframe = None, model_name = 
     open_ranges = input[input.labels == target_label]
     merged_ranges = open_ranges.merge()
 
-    df2 = pyreadr.read_r('ATAC_dt.RDS')[None]
+    df2 = pyreadr.read_r('../inputs/ATAC_dt.RDS')[None]
     df2.rename(columns={"start": "Start", "end": "End", "seqnames": "Chromosome"}, inplace=True)
     atac = pr.PyRanges(df2)
 
-    df3 = pyreadr.read_r('DNAseq_dt.RDS')[None]
+    df3 = pyreadr.read_r('../inputs/DNAseq_dt.RDS')[None]
     df3.rename(columns={"start": "Start", "end": "End", "seqnames": "Chromosome"}, inplace=True)
     dnaseq = pr.PyRanges(df3)
 
@@ -57,7 +57,7 @@ def evaluate(filename = "output_prototypes.csv", dataframe = None, model_name = 
     percentage_overlap2 = dnaseq_int_length / dnaseq_length
     evaluation['DNAseq_overlap'] = percentage_overlap2
 
-    gencode = pr.read_gtf("gencode_chr18.gtf")
+    gencode = pr.read_gtf("../inputs/gencode_chr18.gtf")
 
     # {gene,transcript,exon,CDS,UTR,start_codon,stop_codon,Selenocysteine}
     genes18 = gencode[gencode.Feature == 'gene']
