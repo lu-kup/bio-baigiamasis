@@ -16,9 +16,9 @@ def get_ranges():
 
     grs = {'genes': genes, 'transcripts': transcripts, 'exons': exons, 'CDSs': CDSs}
 
-    # Hardcoded
-    chromo_start = 10000017
-    chromo_end = 25556940
+    # HARDCODED
+    chromo_start = 3000016
+    chromo_end = 9717593
     offset = 0
 
     breaks = list(np.arange(chromo_start + offset, chromo_end, 100))

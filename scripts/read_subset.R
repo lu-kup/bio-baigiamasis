@@ -7,7 +7,7 @@ print("\n")
 cat("Number of rows: ", nrow(t1))
 
 min_start <- min(t1$start)
-max_end <- max(t1$end)
+max_start <- max(t1$start)
 
 cat("\nMinimum start: ", min_start)
-cat("\nMaximum end: ", max_end)
+cat("\nMaximum start: ", max_start)
