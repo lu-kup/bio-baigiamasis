@@ -4,7 +4,7 @@ import pandas as pd
 
 ITERATIONS = 10
 
-result = evaluator.evaluate(dataframe = chromatin_algos.algo1d(), model_name="k-means 1 dimension")
+result = evaluator.evaluate(dataframe = chromatin_algos.algo5d(), model_name="test run")
 
 for i in range(ITERATIONS):
     scale = 2 ** i
