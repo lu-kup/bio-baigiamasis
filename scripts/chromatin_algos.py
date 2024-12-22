@@ -70,7 +70,7 @@ def algo1d():
     print(open_ratio)
     print(kmeans.labels_[:1000])
 
-    np.savetxt('labels.dat', kmeans.labels_, fmt='%d', delimiter=',')
+    np.savetxt('../outputs/labels.dat', kmeans.labels_, fmt='%d', delimiter=',')
 
     return sumos
 
@@ -126,7 +126,7 @@ def algo2d(scale = 1):
     print(open_ratio)
     print(kmeans.labels_[:1000])
 
-    sumos.to_csv('output_2d.csv', sep = '\t')
+    sumos.to_csv('../outputs/output_2d.csv', sep = '\t')
 
     return sumos
 
@@ -193,7 +193,7 @@ def algo5d(scale = 1):
     print(open_ratio)
     print(kmeans.labels_[:1000])
 
-    sumos_features.to_csv('output_5d.csv', sep = '\t')
+    sumos_features.to_csv('../outputs/output_5d.csv', sep = '\t')
 
     return sumos_features
 
@@ -243,7 +243,7 @@ def algo_prototypes(gamma = 1):
     print(open_ratio)
     print(kprotos.labels_[:1000])
 
-    sumos_features.to_csv('output_prototypes.csv', sep = '\t')
+    sumos_features.to_csv('../outputs/output_prototypes.csv', sep = '\t')
 
     return sumos_features
 
@@ -301,7 +301,7 @@ def algo_dbscan(eps=0.05, min_samples=6):
     print(clustering.labels_)
     print("Number of clusters:", max(labels))
 
-    sumos_features.to_csv('output_dbscan.csv', sep = '\t')
+    sumos_features.to_csv('../outputs/output_dbscan.csv', sep = '\t')
 
     return sumos_features
 
