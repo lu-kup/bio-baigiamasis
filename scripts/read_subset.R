@@ -1,4 +1,4 @@
-t1 <- readRDS("subset1.rds")
+t1 <- readRDS("../inputs/subset1.rds")
 head(t1)
 tail(t1)
 
@@ -7,7 +7,7 @@ print("\n")
 cat("Number of rows: ", nrow(t1))
 
 min_start <- min(t1$start)
-max_start <- max(t1$start)
+max_end <- max(t1$end)
 
 cat("\nMinimum start: ", min_start)
-cat("\nMaximum start: ", max_start)
+cat("\nMaximum end: ", max_end)

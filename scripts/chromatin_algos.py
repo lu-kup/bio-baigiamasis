@@ -7,6 +7,7 @@ from sklearn.cluster import DBSCAN
 from kmodes.kprototypes import KPrototypes
 import gower
 import read_ranges
+import math
 
 def add_bins(offset, chromosome):
     chromo_start = chromosome["start"].min() - 1
@@ -248,6 +249,8 @@ def algo_prototypes(gamma = 1):
     return sumos_features
 
 def algo_dbscan(eps=0.05, min_samples=6):
+    BATCH_SIZE = 10000
+
     result = pyreadr.read_r('../inputs/subset1.rds')
     df = result[None]
     bin_offset = 0
@@ -278,28 +281,40 @@ def algo_dbscan(eps=0.05, min_samples=6):
     print("sumos ilgis:", len(sumos))
     print("ranges ilgis:", len(ranges))
 
-    BATCH_SIZE = 10000
     sumos_features = pd.concat([sumos.reset_index(drop=True), ranges.reset_index(drop=True)], axis=1)
-    model_input = sumos_features.copy()[:BATCH_SIZE]
-    model_input.drop(['starting_nt', 'Chromosome', 'Start', 'End'], axis=1, inplace=True)
-    print(model_input)
 
-    # Skaičiuojam
-    print("Length of input:", len(model_input))
-    print("Calculating distances...")
-    distance_matrix = gower.gower_matrix(model_input)
-    clustering = DBSCAN(eps=eps, min_samples=min_samples, metric = "precomputed")
+    start_index = 0
+    end_index = BATCH_SIZE
+    total_values = len(sumos_features)
+    batch_no = math.ceil(total_values / BATCH_SIZE)
 
-    print("Running DBSCAN...")
-    clustering.fit(distance_matrix)
+    for i in range(batch_no):
+        model_input = sumos_features.copy()[start_index:end_index]
+        model_input.drop(['starting_nt', 'Chromosome', 'Start', 'End'], axis=1, inplace=True)
+        print(model_input)
 
-    labels = list(clustering.labels_)
-    sumos_features.loc[:BATCH_SIZE - 1, 'labels'] = clustering.labels_
-    open_ratio = labels.count(1)/len(labels)
+        # Skaičiuojam
+        print("Length of input:", len(model_input))
+        print("Calculating distances...")
+        distance_matrix = gower.gower_matrix(model_input)
+        clustering = DBSCAN(eps=eps, min_samples=min_samples, metric = "precomputed")
+
+        print("Running DBSCAN...")
+        clustering.fit(distance_matrix)
+
+        labels = list(clustering.labels_)
+        sumos_features.loc[start_index:end_index - 1, 'labels'] = clustering.labels_
+
+        start_index += BATCH_SIZE
+        end_index += BATCH_SIZE
+
+        if (end_index >= total_values):
+            end_index = total_values - 1
+
+    open_ratio = sumos_features['labels'].count(1)/total_values
 
     print(open_ratio)
-    print(clustering.labels_)
-    print("Number of clusters:", max(labels))
+    print("Number of clusters:", max(sumos_features['labels']))
 
     sumos_features.to_csv('../outputs/output_dbscan.csv', sep = '\t')
 
