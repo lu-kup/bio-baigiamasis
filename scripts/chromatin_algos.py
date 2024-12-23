@@ -331,8 +331,8 @@ def algo5d_aggregated(scale = 1, n_clusters = 2, threshold = 1.5):
     model_output.to_csv('../outputs/output_algo5d_aggregated.csv', sep = '\t')
     return model_output
 
-def algo_prototypes_aggregated(scale = 1, n_clusters = 2, threshold = 1.5):
-    model_output = algo_prototypes(scale, n_clusters)
+def algo_prototypes_aggregated(gamma = 1, n_clusters = 2, threshold = 1.5):
+    model_output = algo_prototypes(gamma, n_clusters)
     update_labels(model_output, threshold)
     model_output.to_csv('../outputs/output_prototypes_aggregated.csv', sep = '\t')
     return model_output
