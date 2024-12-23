@@ -9,11 +9,14 @@ import gower
 import read_ranges
 import math
 
+BIN_SIZE = 100
+SIGNAL_COLUMN = 'TT_S0'
+
 def add_bins(offset, chromosome):
     chromo_start = chromosome["start"].min() - 1
     chromo_end = chromosome["start"].max()
 
-    breaks = list(np.arange(chromo_start + offset, chromo_end, 100))
+    breaks = list(np.arange(chromo_start + offset, chromo_end, BIN_SIZE))
     from_array = [chromo_start] + breaks
     to_array = breaks + [chromo_end]
 
@@ -131,7 +134,7 @@ def algo2d(scale = 1):
 
     return sumos
 
-def algo5d(scale = 1):
+def algo5d(scale = 1, n_clusters = 2):
     result = pyreadr.read_r('../inputs/subset1.rds')
     df = result[None]
     bin_offset = 0
@@ -184,7 +187,7 @@ def algo5d(scale = 1):
     print(model_input)
 
     # Skaičiuojam
-    kmeans = KMeans(n_clusters=2)
+    kmeans = KMeans(n_clusters=n_clusters)
     kmeans.fit(model_input)
     inertia = kmeans.inertia_
     labels = list(kmeans.labels_)
@@ -198,7 +201,7 @@ def algo5d(scale = 1):
 
     return sumos_features
 
-def algo_prototypes(gamma = 1):
+def algo_prototypes(gamma = 1, n_clusters = 2):
     result = pyreadr.read_r('../inputs/subset1.rds')
     df = result[None]
     bin_offset = 0
@@ -235,7 +238,7 @@ def algo_prototypes(gamma = 1):
     print(model_input)
 
     # Skaičiuojam
-    kprotos = KPrototypes(n_clusters=2, gamma=gamma, verbose=1)
+    kprotos = KPrototypes(n_clusters=n_clusters, gamma=gamma, verbose=1)
     kprotos.fit(model_input, categorical=[1, 2, 3, 4])
     labels = list(kprotos.labels_)
     sumos_features['labels'] = kprotos.labels_
@@ -322,5 +325,55 @@ def algo_dbscan(eps=0.01, min_samples=6):
 
     return sumos_features
 
+def algo5d_aggregated(scale = 1, n_clusters = 2, threshold = 1.5):
+    model_output = algo5d(scale, n_clusters)
+    update_labels(model_output, threshold)
+    model_output.to_csv('../outputs/output_algo5d_aggregated.csv', sep = '\t')
+    return model_output
+
+def algo_prototypes_aggregated(scale = 1, n_clusters = 2, threshold = 1.5):
+    model_output = algo_prototypes(scale, n_clusters)
+    update_labels(model_output, threshold)
+    model_output.to_csv('../outputs/output_prototypes_aggregated.csv', sep = '\t')
+    return model_output
+
+def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5):
+    model_output = algo_dbscan(eps, min_samples)
+    update_labels(model_output, threshold)
+    model_output.to_csv('../outputs/output_dbscan_aggregated.csv', sep = '\t')
+    return model_output
+
+def map_clusters(dataframe, threshold):
+    cluster_labels = dataframe['labels'].unique()
+    signal_density = dataframe[SIGNAL_COLUMN].sum() / (dataframe['starting_nt'].max() + BIN_SIZE - dataframe['starting_nt'].min())
+    threshold_density = threshold * signal_density
+    print("threshold density", threshold_density)
+    mapping = {}
+
+    for cluster_label in cluster_labels:
+        cluster = dataframe[dataframe['labels'] == cluster_label]
+        cluster_length = len(cluster) * BIN_SIZE
+        if cluster_length == 0:
+            continue
+        cluster_signal = cluster[SIGNAL_COLUMN].sum()
+        print("cluster signal", cluster_signal)
+        print("cluster length", cluster_length)
+        cluster_density = cluster_signal / cluster_length
+        print("!!cluster density", cluster_density)
+        if cluster_density > threshold_density:
+            mapping[cluster_label] = 1
+        else:
+            mapping[cluster_label] = 0
+
+    return mapping 
+
+def update_labels(dataframe, threshold = 1.5):
+    mapping = map_clusters(dataframe, threshold)
+    print("\nLabels mapping\n", mapping)
+    dataframe['labels'] = dataframe['labels'].map(mapping)
+
 if __name__ == "__main__":
-    algo_dbscan()
+    import evaluator
+    out = algo_dbscan_aggregated(eps = 0.001, threshold = 1.5)
+    #out = pd.read_csv('../outputs/output_dbscan.csv', sep = '\t', index_col=0)
+    print(evaluator.evaluate(dataframe = out))

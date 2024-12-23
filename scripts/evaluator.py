@@ -93,5 +93,13 @@ def evaluate(filename = "../outputs/output_prototypes.csv", dataframe = None, mo
 
     return evaluation
 
+def count_clusters(filename = "../outputs/output_prototypes.csv", dataframe = None, model_name = ''):
+    if dataframe is None:
+        df = pd.read_csv(filename, sep = '\t', index_col=0)
+    else:
+        df = dataframe
+
+    return pd.Series([max(df['labels']) + 1], name='no_clusters')
+
 if __name__ == "__main__":
     print(evaluate())

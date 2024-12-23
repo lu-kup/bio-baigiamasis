@@ -22,7 +22,7 @@ for i in range(ITERATIONS):
     result.to_csv(FILEPATH, sep = '\t') """
 
 for i in range(ITERATIONS):
-    eps = 0.1 * (2 ** i)
+    eps = 0.01 * (2 ** i)
     print("Runnning DBSCAN, epsilon", eps)
     evaluation = evaluator.evaluate(dataframe = chromatin_algos.algo_dbscan(eps), model_name=f"DBSCAN eps={eps}")
     result = pd.concat([result, evaluation], axis=1)

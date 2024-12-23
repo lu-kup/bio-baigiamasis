@@ -2,6 +2,8 @@ import pyranges as pr
 import pandas as pd
 import numpy as np
 
+BIN_SIZE = 100
+
 #pd.set_option('display.min_rows', 500)
 #pd.set_option('display.max_rows', 500)
 
@@ -21,7 +23,7 @@ def get_ranges():
     chromo_end = 9717593
     offset = 0
 
-    breaks = list(np.arange(chromo_start + offset, chromo_end, 100))
+    breaks = list(np.arange(chromo_start + offset, chromo_end, BIN_SIZE))
     from_array = [chromo_start] + breaks
     to_array = breaks + [chromo_end]
 
