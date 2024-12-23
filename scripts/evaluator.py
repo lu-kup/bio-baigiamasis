@@ -40,7 +40,7 @@ def evaluate(filename = "../outputs/output_prototypes.csv", dataframe = None, mo
     dnaseq = pr.PyRanges(df3)
 
     m_lengths = merged_ranges.lengths()
-    merged_ranges = merged_ranges.assign('Length', lambda x : m_lengths)
+    merged_ranges.Length = merged_ranges.End - merged_ranges.Start
 
     evaluation = merged_ranges.Length.describe()
 

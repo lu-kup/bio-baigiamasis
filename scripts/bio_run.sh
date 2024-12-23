@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -p main
-#SBATCH -n2
+#SBATCH -n1
 
 set -x
 date
