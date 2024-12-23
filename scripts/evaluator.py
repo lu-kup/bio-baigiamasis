@@ -23,12 +23,18 @@ def evaluate(filename = "../outputs/output_prototypes.csv", dataframe = None, mo
 
     if count0 > count1:
         open_label = 1
-        closed_label = 0
     else:
         open_label = 0
-        closed_label = 1
+
+    print("DEBUG:", count0, count1, "\n\n", input[input.labels == 0])
 
     open_ranges = input[input.labels == open_label]
+    if len(open_ranges) == 0:
+        print("The model failed to identify open ranges.")
+        data = [model_name]
+        row_labels = ['model_name']
+        return pd.DataFrame(data, index=row_labels)
+
     merged_ranges = open_ranges.merge()
 
     df2 = pyreadr.read_r('../inputs/ATAC_dt.RDS')[None]
@@ -81,8 +87,9 @@ def evaluate(filename = "../outputs/output_prototypes.csv", dataframe = None, mo
 
     evaluation['min_open_signal'] = df.loc[df["labels"] == open_label, SIGNAL_LABEL].min()
     evaluation['max_open_signal'] = df.loc[df["labels"] == open_label, SIGNAL_LABEL].max()
-    evaluation['min_closed_signal'] = df.loc[df["labels"] == closed_label, SIGNAL_LABEL].min()
-    evaluation['max_closed_signal'] = df.loc[df["labels"] == closed_label, SIGNAL_LABEL].max()
+    evaluation['min_closed_signal'] = df.loc[df["labels"] != open_label, SIGNAL_LABEL].min()
+    evaluation['max_closed_signal'] = df.loc[df["labels"] != open_label, SIGNAL_LABEL].max()
+    evaluation['no_clusters'] = max(df['labels']) + 1
 
     return evaluation
 

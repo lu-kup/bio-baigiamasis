@@ -248,7 +248,7 @@ def algo_prototypes(gamma = 1):
 
     return sumos_features
 
-def algo_dbscan(eps=0.05, min_samples=6):
+def algo_dbscan(eps=0.01, min_samples=6):
     BATCH_SIZE = 10000
 
     result = pyreadr.read_r('../inputs/subset1.rds')
@@ -287,6 +287,7 @@ def algo_dbscan(eps=0.05, min_samples=6):
     end_index = BATCH_SIZE
     total_values = len(sumos_features)
     batch_no = math.ceil(total_values / BATCH_SIZE)
+    labels = pd.DataFrame(index = range(total_values), columns = ['labels'])
 
     for i in range(batch_no):
         model_input = sumos_features.copy()[start_index:end_index]
@@ -302,8 +303,7 @@ def algo_dbscan(eps=0.05, min_samples=6):
         print("Running DBSCAN...")
         clustering.fit(distance_matrix)
 
-        labels = list(clustering.labels_)
-        sumos_features.loc[start_index:end_index - 1, 'labels'] = clustering.labels_
+        labels.loc[start_index:end_index - 1, 'labels'] = clustering.labels_
 
         start_index += BATCH_SIZE
         end_index += BATCH_SIZE
@@ -311,15 +311,16 @@ def algo_dbscan(eps=0.05, min_samples=6):
         if (end_index >= total_values):
             end_index = total_values - 1
 
+    sumos_features['labels'] = labels
     final_labels = list(sumos_features['labels'])
     open_ratio = final_labels.count(1)/total_values
 
     print(open_ratio)
-    print("Number of clusters:", max(sumos_features['labels']))
+    print("Number of clusters:", max(sumos_features['labels']) + 1)
 
     sumos_features.to_csv('../outputs/output_dbscan.csv', sep = '\t')
 
     return sumos_features
 
 if __name__ == "__main__":
-    algo5d()
+    algo_dbscan()
