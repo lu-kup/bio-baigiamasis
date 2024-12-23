@@ -1,0 +1,20 @@
+	Length	0	0	0	0	0	0	0	0	0	0
+count	7301.0										
+mean	188.59060402684563										
+std	174.99886391624824										
+min	100.0										
+25%	100.0										
+50%	100.0										
+75%	200.0										
+max	2400.0										
+ATACseq_overlap	0.6979494087711421										
+DNAseq_overlap	0.5953294223826715										
+genes_overlap	0.544832594959692										
+percentage_open	0.14169145160828905										
+percentage_open_adj	0.20496921963429168										
+model_name	test run	DBSCAN eps=0.1	DBSCAN eps=0.2	DBSCAN eps=0.4	DBSCAN eps=0.8	DBSCAN eps=1.6	DBSCAN eps=3.2	DBSCAN eps=6.4	DBSCAN eps=12.8	DBSCAN eps=25.6	DBSCAN eps=51.2
+min_open_signal	17.0										
+max_open_signal	393.0										
+min_closed_signal	0.0										
+max_closed_signal	16.0										
+no_clusters	2										
