@@ -311,7 +311,8 @@ def algo_dbscan(eps=0.05, min_samples=6):
         if (end_index >= total_values):
             end_index = total_values - 1
 
-    open_ratio = sumos_features['labels'].count(1)/total_values
+    final_labels = list(sumos_features['labels'])
+    open_ratio = final_labels.count(1)/total_values
 
     print(open_ratio)
     print("Number of clusters:", max(sumos_features['labels']))
