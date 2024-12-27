@@ -325,6 +325,83 @@ def algo_dbscan(eps=0.01, min_samples=6):
 
     return sumos_features
 
+def algo_dbscan_aggregated(eps=0.01, min_samples=6, threshold = 1.5):
+    BATCH_SIZE = 10000
+
+    result = pyreadr.read_r('../inputs/subset1.rds')
+    df = result[None]
+    bin_offset = 0
+
+    print("HEAD")
+    print(df.head())
+
+    add_bins(bin_offset, df)
+
+    print("HEAD w BINS")
+    print(df.head())
+    print("TAIL w BINS")
+    print(df.tail())
+    print()
+
+    df.drop(['seqnames', 'start', 'end', 'CG_ID'], axis=1, inplace=True)
+    sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
+    sumos['starting_nt'] = sumos['bin_offset_0'].apply(lambda x: x.left)
+
+    sumos.drop(['TT_S1', 'TT_S2', 'bin_offset_0'], axis=1, inplace=True)
+
+    print("SUMOS")
+    print(sumos[:50])
+    print(sumos.shape)
+    print(sumos.dtypes)
+
+    ranges = read_ranges.get_ranges()
+    print("sumos ilgis:", len(sumos))
+    print("ranges ilgis:", len(ranges))
+
+    sumos_features = pd.concat([sumos.reset_index(drop=True), ranges.reset_index(drop=True)], axis=1)
+
+    start_index = 0
+    end_index = BATCH_SIZE
+    total_values = len(sumos_features)
+    batch_no = math.ceil(total_values / BATCH_SIZE)
+    labels = pd.DataFrame(index = range(total_values), columns = ['labels'])
+    signal_density = get_binned_signal_density(sumos_features)
+
+    for i in range(batch_no):
+        model_input = sumos_features.copy()[start_index:end_index]
+        model_input.drop(['starting_nt', 'Chromosome', 'Start', 'End'], axis=1, inplace=True)
+        print(model_input)
+
+        # Skaičiuojam
+        print("Length of input:", len(model_input))
+        print("Calculating distances...")
+        distance_matrix = gower.gower_matrix(model_input)
+        clustering = DBSCAN(eps=eps, min_samples=min_samples, metric = "precomputed")
+
+        print("Running DBSCAN...")
+        clustering.fit(distance_matrix)
+
+        model_input['labels'] = clustering.labels_
+        update_labels(model_input, threshold, signal_density)
+        labels.loc[start_index:end_index - 1, 'labels'] = model_input['labels']
+
+        start_index += BATCH_SIZE
+        end_index += BATCH_SIZE
+
+        if (end_index >= total_values):
+            end_index = total_values - 1
+
+    sumos_features['labels'] = labels
+    final_labels = list(sumos_features['labels'])
+    open_ratio = final_labels.count(1)/total_values
+
+    print(open_ratio)
+    print("Number of clusters:", max(sumos_features['labels']) + 1)
+
+    sumos_features.to_csv('../outputs/output_dbscan_aggregated.csv', sep = '\t')
+
+    return sumos_features
+
 def algo5d_aggregated(scale = 1, n_clusters = 2, threshold = 1.5):
     model_output = algo5d(scale, n_clusters)
     update_labels(model_output, threshold)
@@ -337,15 +414,10 @@ def algo_prototypes_aggregated(gamma = 1, n_clusters = 2, threshold = 1.5):
     model_output.to_csv('../outputs/output_prototypes_aggregated.csv', sep = '\t')
     return model_output
 
-def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5):
-    model_output = algo_dbscan(eps, min_samples)
-    update_labels(model_output, threshold)
-    model_output.to_csv('../outputs/output_dbscan_aggregated.csv', sep = '\t')
-    return model_output
-
-def map_clusters(dataframe, threshold):
+def map_clusters(dataframe, threshold, signal_density = None):
     cluster_labels = dataframe['labels'].unique()
-    signal_density = dataframe[SIGNAL_COLUMN].sum() / (dataframe['starting_nt'].max() + BIN_SIZE - dataframe['starting_nt'].min())
+    if signal_density is None:
+        signal_density = get_binned_signal_density(dataframe)
     threshold_density = threshold * signal_density
     print("threshold density", threshold_density)
     mapping = {}
@@ -367,10 +439,13 @@ def map_clusters(dataframe, threshold):
 
     return mapping 
 
-def update_labels(dataframe, threshold = 1.5):
-    mapping = map_clusters(dataframe, threshold)
+def update_labels(dataframe, threshold = 1.5, signal_density = None):
+    mapping = map_clusters(dataframe, threshold, signal_density)
     print("\nLabels mapping\n", mapping)
     dataframe['labels'] = dataframe['labels'].map(mapping)
+
+def get_binned_signal_density(dataframe):
+    return dataframe[SIGNAL_COLUMN].sum() / (dataframe['starting_nt'].max() + BIN_SIZE - dataframe['starting_nt'].min())
 
 if __name__ == "__main__":
     import evaluator
