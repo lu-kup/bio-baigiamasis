@@ -10,33 +10,7 @@ CHR18_SUBSET_SIZE = 9717594
 CHR18_SUBSET_SIZE_ADJ = CHR18_SUBSET_SIZE - 3000000
 SIGNAL_LABEL = 'TT_S0'
 
-def evaluate(filename = "../outputs/output_prototypes.csv", dataframe = None, model_name = ''):
-    if dataframe is None:
-        df = pd.read_csv(filename, sep = '\t', index_col=0)
-    else:
-        df = dataframe
-
-    input = pr.PyRanges(df)
-
-    count0 = len(input[input.labels == 0])
-    count1 = len(input[input.labels == 1])
-
-    if count0 > count1:
-        open_label = 1
-    else:
-        open_label = 0
-
-    print("DEBUG:", count0, count1, "\n\n", input[input.labels == 0])
-
-    open_ranges = input[input.labels == open_label]
-    if len(open_ranges) == 0:
-        print("The model failed to identify open ranges.")
-        data = [model_name]
-        row_labels = ['model_name']
-        return pd.DataFrame(data, index=row_labels)
-
-    merged_ranges = open_ranges.merge()
-
+def evaluate(merged_ranges, model_name = ''):
     df2 = pyreadr.read_r('../inputs/ATAC_dt.RDS')[None]
     df2.rename(columns={"start": "Start", "end": "End", "seqnames": "Chromosome"}, inplace=True)
     atac = pr.PyRanges(df2)
@@ -45,9 +19,7 @@ def evaluate(filename = "../outputs/output_prototypes.csv", dataframe = None, mo
     df3.rename(columns={"start": "Start", "end": "End", "seqnames": "Chromosome"}, inplace=True)
     dnaseq = pr.PyRanges(df3)
 
-    m_lengths = merged_ranges.lengths()
     merged_ranges.Length = merged_ranges.End - merged_ranges.Start
-
     evaluation = merged_ranges.Length.describe()
 
     atac_intersection = atac.intersect(merged_ranges)

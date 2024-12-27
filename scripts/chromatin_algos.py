@@ -394,19 +394,19 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
 
     sumos_features.to_csv('../outputs/output_dbscan_aggregated.csv', sep = '\t')
 
-    return sumos_features
+    return bins_to_ranges(sumos_features)
 
 def algo5d_aggregated(scale = 1, n_clusters = 2, threshold = 1.5, bin_offset = 0):
     model_output = algo5d(scale, n_clusters, bin_offset)
     update_labels(model_output, threshold)
     model_output.to_csv('../outputs/output_algo5d_aggregated.csv', sep = '\t')
-    return model_output
+    return bins_to_ranges(model_output)
 
 def algo_prototypes_aggregated(gamma = 1, n_clusters = 2, threshold = 1.5, bin_offset = 0):
     model_output = algo_prototypes(gamma, n_clusters, bin_offset)
     update_labels(model_output, threshold)
     model_output.to_csv('../outputs/output_prototypes_aggregated.csv', sep = '\t')
-    return model_output
+    return bins_to_ranges(model_output)
 
 def map_clusters(dataframe, threshold, signal_density = None):
     cluster_labels = dataframe['labels'].unique()
@@ -437,6 +437,30 @@ def update_labels(dataframe, threshold = 1.5, signal_density = None):
     mapping = map_clusters(dataframe, threshold, signal_density)
     print("\nLabels mapping\n", mapping)
     dataframe['labels'] = dataframe['labels'].map(mapping)
+
+def bins_to_ranges(dataframe, model_name):
+    input = pr.PyRanges(dataframe)
+
+    count0 = len(input[input.labels == 0])
+    count1 = len(input[input.labels == 1])
+
+    if count0 > count1:
+        open_label = 1
+    else:
+        open_label = 0
+
+    print("DEBUG:", count0, count1, "\n\n", input[input.labels == 0])
+
+    open_ranges = input[input.labels == open_label]
+    if len(open_ranges) == 0:
+        print("The model failed to identify open ranges.")
+        data = [model_name]
+        row_labels = ['model_name']
+        return pd.DataFrame(data, index=row_labels)
+
+    merged_ranges = open_ranges.merge()
+
+    return merged_ranges
 
 def get_binned_signal_density(dataframe):
     return dataframe[SIGNAL_COLUMN].sum() / (dataframe['starting_nt'].max() + BIN_SIZE - dataframe['starting_nt'].min())
