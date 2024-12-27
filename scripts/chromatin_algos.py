@@ -11,6 +11,7 @@ import math
 
 BIN_SIZE = 100
 SIGNAL_COLUMN = 'TT_S0'
+SIGNAL_LABEL = 'TT_S0'
 
 def add_bins(offset, chromosome):
     chromo_start = chromosome["start"].min() - 1
@@ -394,19 +395,19 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
 
     sumos_features.to_csv('../outputs/output_dbscan_aggregated.csv', sep = '\t')
 
-    return bins_to_ranges(sumos_features)
+    return bins_to_ranges(sumos_features, 'DBSCAN')
 
 def algo5d_aggregated(scale = 1, n_clusters = 2, threshold = 1.5, bin_offset = 0):
     model_output = algo5d(scale, n_clusters, bin_offset)
     update_labels(model_output, threshold)
     model_output.to_csv('../outputs/output_algo5d_aggregated.csv', sep = '\t')
-    return bins_to_ranges(model_output)
+    return bins_to_ranges(model_output, 'k-means 5D')
 
 def algo_prototypes_aggregated(gamma = 1, n_clusters = 2, threshold = 1.5, bin_offset = 0):
     model_output = algo_prototypes(gamma, n_clusters, bin_offset)
     update_labels(model_output, threshold)
     model_output.to_csv('../outputs/output_prototypes_aggregated.csv', sep = '\t')
-    return bins_to_ranges(model_output)
+    return bins_to_ranges(model_output, 'k-prototypes')
 
 def map_clusters(dataframe, threshold, signal_density = None):
     cluster_labels = dataframe['labels'].unique()
@@ -438,8 +439,19 @@ def update_labels(dataframe, threshold = 1.5, signal_density = None):
     print("\nLabels mapping\n", mapping)
     dataframe['labels'] = dataframe['labels'].map(mapping)
 
-def bins_to_ranges(dataframe, model_name):
-    input = pr.PyRanges(dataframe)
+def evaluate_bins(df, model_name):
+    evaluation = {}
+    evaluation['model_name'] = model_name
+    evaluation['min_open_signal'] = df.loc[df["labels"] == open_label, SIGNAL_COLUMN].min()
+    evaluation['max_open_signal'] = df.loc[df["labels"] == open_label, SIGNAL_COLUMN].max()
+    evaluation['min_closed_signal'] = df.loc[df["labels"] != open_label, SIGNAL_COLUMN].min()
+    evaluation['max_closed_signal'] = df.loc[df["labels"] != open_label, SIGNAL_COLUMN].max()
+    evaluation['no_clusters'] = max(df['labels']) + 1
+
+    return evaluation
+
+def bins_to_ranges(df, model_name):
+    input = pr.PyRanges(df)
 
     count0 = len(input[input.labels == 0])
     count1 = len(input[input.labels == 1])
@@ -464,24 +476,6 @@ def bins_to_ranges(dataframe, model_name):
 
 def get_binned_signal_density(dataframe):
     return dataframe[SIGNAL_COLUMN].sum() / (dataframe['starting_nt'].max() + BIN_SIZE - dataframe['starting_nt'].min())
-
-def generate_consensus_5x20(algorithm, params):
-    dataframe = pyreadr.read_r('../inputs/subset1.rds')[None]
-
-    for i in range(20):
-        current_offset = i * 5
-        output_dataframe = algorithm(*params, bin_offset = current_offset)
-        output_dataframe = output_dataframe.rename(columns = {'labels' : 'predicted_state_' + str(current_offset)})
-        states_df = output_dataframe[['bin_offset_' + str(current_offset), 'predicted_state_' + str(current_offset)]]
-        dataframe = dataframe.join(states_df, on = 'bin_offset_' + str(current_offset))
-
-    filtered = dataframe.filter(regex="predicted_state_")
-    dataframe['predict_state_SUM'] = filtered.sum(axis=1)
-    dataframe['labels'] = dataframe["predict_state_SUM"] > 10
-    dataframe['labels'] = dataframe['labels'].astype(int)
-
-    merged_output = pr.PyRanges(dataframe).merge(by = 'labels')
-    merged_output.df.to_csv('../outputs/output_consensus.csv', sep = '\t')
 
 if __name__ == "__main__":
     import evaluator

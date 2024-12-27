@@ -8,7 +8,6 @@ import pyranges as pr
 CHR18_SIZE = 90720763
 CHR18_SUBSET_SIZE = 9717594
 CHR18_SUBSET_SIZE_ADJ = CHR18_SUBSET_SIZE - 3000000
-SIGNAL_LABEL = 'TT_S0'
 
 def evaluate(merged_ranges, model_name = ''):
     df2 = pyreadr.read_r('../inputs/ATAC_dt.RDS')[None]
@@ -18,6 +17,12 @@ def evaluate(merged_ranges, model_name = ''):
     df3 = pyreadr.read_r('../inputs/DNAseq_dt.RDS')[None]
     df3.rename(columns={"start": "Start", "end": "End", "seqnames": "Chromosome"}, inplace=True)
     dnaseq = pr.PyRanges(df3)
+
+    if len(merged_ranges) == 0:
+        print("The model failed to identify open ranges.")
+        data = [model_name]
+        row_labels = ['model_name']
+        return pd.DataFrame(data, index=row_labels)
 
     merged_ranges.Length = merged_ranges.End - merged_ranges.Start
     evaluation = merged_ranges.Length.describe()
@@ -56,12 +61,6 @@ def evaluate(merged_ranges, model_name = ''):
     evaluation['percentage_open'] = output_length / CHR18_SUBSET_SIZE
     evaluation['percentage_open_adj'] = output_length / CHR18_SUBSET_SIZE_ADJ
     evaluation['model_name'] = model_name
-
-    evaluation['min_open_signal'] = df.loc[df["labels"] == open_label, SIGNAL_LABEL].min()
-    evaluation['max_open_signal'] = df.loc[df["labels"] == open_label, SIGNAL_LABEL].max()
-    evaluation['min_closed_signal'] = df.loc[df["labels"] != open_label, SIGNAL_LABEL].min()
-    evaluation['max_closed_signal'] = df.loc[df["labels"] != open_label, SIGNAL_LABEL].max()
-    evaluation['no_clusters'] = max(df['labels']) + 1
 
     return evaluation
 
