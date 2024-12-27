@@ -28,10 +28,9 @@ def add_bins(offset, chromosome):
 
     return bins
 
-def algo1d():
+def algo1d(bin_offset = 0):
     result = pyreadr.read_r('../inputs/subset1.rds')
-    df = result[None]
-    bin_offset = 0
+    df = result[None]    
 
     print("HEAD")
     print(df.head())
@@ -78,9 +77,8 @@ def algo1d():
 
     return sumos
 
-def algo2d(scale = 1):
+def algo2d(scale = 1, bin_offset = 0):
     df = pyreadr.read_r('../inputs/subset1.rds')[None]
-    bin_offset = 0
 
     print("HEAD")
     print(df.head())
@@ -134,10 +132,9 @@ def algo2d(scale = 1):
 
     return sumos
 
-def algo5d(scale = 1, n_clusters = 2):
+def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
     result = pyreadr.read_r('../inputs/subset1.rds')
     df = result[None]
-    bin_offset = 0
 
     print("HEAD")
     print(df.head())
@@ -161,7 +158,7 @@ def algo5d(scale = 1, n_clusters = 2):
     print(sumos.shape)
     print(sumos.dtypes)
 
-    ranges = read_ranges.get_ranges()
+    ranges = read_ranges.get_ranges(bin_offset)
     print("sumos ilgis:", len(sumos))
     print("ranges ilgis:", len(ranges))
 
@@ -201,10 +198,9 @@ def algo5d(scale = 1, n_clusters = 2):
 
     return sumos_features
 
-def algo_prototypes(gamma = 1, n_clusters = 2):
+def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
     result = pyreadr.read_r('../inputs/subset1.rds')
     df = result[None]
-    bin_offset = 0
 
     print("HEAD")
     print(df.head())
@@ -228,7 +224,7 @@ def algo_prototypes(gamma = 1, n_clusters = 2):
     print(sumos.shape)
     print(sumos.dtypes)
 
-    ranges = read_ranges.get_ranges()
+    ranges = read_ranges.get_ranges(bin_offset)
     print("sumos ilgis:", len(sumos))
     print("ranges ilgis:", len(ranges))
 
@@ -251,12 +247,11 @@ def algo_prototypes(gamma = 1, n_clusters = 2):
 
     return sumos_features
 
-def algo_dbscan(eps=0.01, min_samples=6):
+def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
     BATCH_SIZE = 10000
 
     result = pyreadr.read_r('../inputs/subset1.rds')
     df = result[None]
-    bin_offset = 0
 
     print("HEAD")
     print(df.head())
@@ -280,7 +275,7 @@ def algo_dbscan(eps=0.01, min_samples=6):
     print(sumos.shape)
     print(sumos.dtypes)
 
-    ranges = read_ranges.get_ranges()
+    ranges = read_ranges.get_ranges(bin_offset)
     print("sumos ilgis:", len(sumos))
     print("ranges ilgis:", len(ranges))
 
@@ -325,12 +320,11 @@ def algo_dbscan(eps=0.01, min_samples=6):
 
     return sumos_features
 
-def algo_dbscan_aggregated(eps=0.01, min_samples=6, threshold = 1.5):
+def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_offset = 0):
     BATCH_SIZE = 10000
 
     result = pyreadr.read_r('../inputs/subset1.rds')
     df = result[None]
-    bin_offset = 0
 
     print("HEAD")
     print(df.head())
@@ -354,7 +348,7 @@ def algo_dbscan_aggregated(eps=0.01, min_samples=6, threshold = 1.5):
     print(sumos.shape)
     print(sumos.dtypes)
 
-    ranges = read_ranges.get_ranges()
+    ranges = read_ranges.get_ranges(bin_offset)
     print("sumos ilgis:", len(sumos))
     print("ranges ilgis:", len(ranges))
 
@@ -402,14 +396,14 @@ def algo_dbscan_aggregated(eps=0.01, min_samples=6, threshold = 1.5):
 
     return sumos_features
 
-def algo5d_aggregated(scale = 1, n_clusters = 2, threshold = 1.5):
-    model_output = algo5d(scale, n_clusters)
+def algo5d_aggregated(scale = 1, n_clusters = 2, threshold = 1.5, bin_offset = 0):
+    model_output = algo5d(scale, n_clusters, bin_offset)
     update_labels(model_output, threshold)
     model_output.to_csv('../outputs/output_algo5d_aggregated.csv', sep = '\t')
     return model_output
 
-def algo_prototypes_aggregated(gamma = 1, n_clusters = 2, threshold = 1.5):
-    model_output = algo_prototypes(gamma, n_clusters)
+def algo_prototypes_aggregated(gamma = 1, n_clusters = 2, threshold = 1.5, bin_offset = 0):
+    model_output = algo_prototypes(gamma, n_clusters, bin_offset)
     update_labels(model_output, threshold)
     model_output.to_csv('../outputs/output_prototypes_aggregated.csv', sep = '\t')
     return model_output
@@ -446,6 +440,24 @@ def update_labels(dataframe, threshold = 1.5, signal_density = None):
 
 def get_binned_signal_density(dataframe):
     return dataframe[SIGNAL_COLUMN].sum() / (dataframe['starting_nt'].max() + BIN_SIZE - dataframe['starting_nt'].min())
+
+def generate_consensus_5x20(algorithm, params):
+    dataframe = pyreadr.read_r('../inputs/subset1.rds')[None]
+
+    for i in range(20):
+        current_offset = i * 5
+        output_dataframe = algorithm(*params, bin_offset = current_offset)
+        output_dataframe = output_dataframe.rename(columns = {'labels' : 'predicted_state_' + str(current_offset)})
+        states_df = output_dataframe[['bin_offset_' + str(current_offset), 'predicted_state_' + str(current_offset)]]
+        dataframe = dataframe.join(states_df, on = 'bin_offset_' + str(current_offset))
+
+    filtered = dataframe.filter(regex="predicted_state_")
+    dataframe['predict_state_SUM'] = filtered.sum(axis=1)
+    dataframe['labels'] = dataframe["predict_state_SUM"] > 10
+    dataframe['labels'] = dataframe['labels'].astype(int)
+
+    merged_output = pr.PyRanges(dataframe).merge(by = 'labels')
+    merged_output.df.to_csv('../outputs/output_consensus.csv', sep = '\t')
 
 if __name__ == "__main__":
     import evaluator

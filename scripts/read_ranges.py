@@ -7,7 +7,7 @@ BIN_SIZE = 100
 #pd.set_option('display.min_rows', 500)
 #pd.set_option('display.max_rows', 500)
 
-def get_ranges():
+def get_ranges(offset = 0):
     gr = pr.read_gtf("../inputs/gencode_chr18.gtf")
 
     # {gene,transcript,exon,CDS,UTR,start_codon,stop_codon,Selenocysteine}
@@ -21,7 +21,6 @@ def get_ranges():
     # HARDCODED
     chromo_start = 3000016
     chromo_end = 9717593
-    offset = 0
 
     breaks = list(np.arange(chromo_start + offset, chromo_end, BIN_SIZE))
     from_array = [chromo_start] + breaks
