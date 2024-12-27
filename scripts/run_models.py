@@ -7,7 +7,7 @@ FILEPATH = '../outputs/results_regression_test.csv'
 
 thresholds = [1, 1.5, 2, 2.5, 3]
 
-result = evaluator.evaluate(merged_ranges = chromatin_algos.algo5d(), model_name="test run")
+result = evaluator.evaluate(merged_ranges = chromatin_algos.algo5d_aggregated(), model_name="test run")
 
 for i in range(ITERATIONS):
     for threshold in thresholds:
