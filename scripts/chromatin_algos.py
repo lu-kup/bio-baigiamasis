@@ -11,6 +11,7 @@ import math
 
 BIN_SIZE = 100
 SIGNAL_COLUMN = 'TT_S0'
+SAMPLE_FILEPATH = '../inputs/subset1.rds'
 
 def add_bins(offset, chromosome):
     chromo_start = chromosome["start"].min() - 1
@@ -29,8 +30,7 @@ def add_bins(offset, chromosome):
     return from_array, to_array
 
 def algo1d(bin_offset = 0):
-    result = pyreadr.read_r('../inputs/subset1.rds')
-    df = result[None]    
+    df = pyreadr.read_r(SAMPLE_FILEPATH)[None]
 
     print("HEAD")
     print(df.head())
@@ -69,7 +69,7 @@ def algo1d(bin_offset = 0):
     return sumos
 
 def algo2d(scale = 1, bin_offset = 0):
-    df = pyreadr.read_r('../inputs/subset1.rds')[None]
+    df = pyreadr.read_r(SAMPLE_FILEPATH)[None]
 
     print("HEAD")
     print(df.head())
@@ -115,8 +115,7 @@ def algo2d(scale = 1, bin_offset = 0):
     return sumos
 
 def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
-    result = pyreadr.read_r('../inputs/subset1.rds')
-    df = result[None]
+    df = pyreadr.read_r(SAMPLE_FILEPATH)[None]
 
     print("HEAD")
     print(df.head())
@@ -181,8 +180,7 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
     return sumos_features
 
 def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
-    result = pyreadr.read_r('../inputs/subset1.rds')
-    df = result[None]
+    df = pyreadr.read_r(SAMPLE_FILEPATH)[None]
 
     print("HEAD")
     print(df.head())
@@ -232,8 +230,7 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
 def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
     BATCH_SIZE = 10000
 
-    result = pyreadr.read_r('../inputs/subset1.rds')
-    df = result[None]
+    df = pyreadr.read_r(SAMPLE_FILEPATH)[None]
 
     print("HEAD")
     print(df.head())
@@ -305,8 +302,7 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
 def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_offset = 0):
     BATCH_SIZE = 10000
 
-    result = pyreadr.read_r('../inputs/subset1.rds')
-    df = result[None]
+    df = pyreadr.read_r(SAMPLE_FILEPATH)[None]
 
     print("HEAD")
     print(df.head())
