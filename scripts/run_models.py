@@ -3,19 +3,19 @@ import evaluator
 import pandas as pd
 
 ITERATIONS = 10
-FILEPATH = '../outputs/results_regression_test.csv'
+FILEPATH = '../outputs/results_regression_test2.csv'
 
 thresholds = [1, 1.5, 2, 2.5, 3]
 
 result = evaluator.evaluate(merged_ranges = chromatin_algos.algo5d_aggregated(), model_name="test run")
 
-for i in range(ITERATIONS):
+""" for i in range(ITERATIONS):
     for threshold in thresholds:
         eps = 0.0001 * (2 ** i)
         print("Runnning DBSCAN, epsilon", eps)
         evaluation = evaluator.evaluate(merged_ranges = chromatin_algos.algo_dbscan_aggregated(eps=eps, threshold=threshold), model_name=f"DBSCAN eps={eps}, threshold={threshold}")
         result = pd.concat([result, evaluation], axis=1)
-        result.to_csv(FILEPATH, sep = '\t')
+        result.to_csv(FILEPATH, sep = '\t') """
 
 for i in range(ITERATIONS):
     for threshold in thresholds:

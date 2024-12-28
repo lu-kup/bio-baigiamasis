@@ -464,12 +464,6 @@ def bins_to_ranges(df, model_name):
     print("DEBUG:", count0, count1, "\n\n", input[input.labels == 0])
 
     open_ranges = input[input.labels == open_label]
-    if len(open_ranges) == 0:
-        print("The model failed to identify open ranges.")
-        data = [model_name]
-        row_labels = ['model_name']
-        return pd.DataFrame(data, index=row_labels)
-
     merged_ranges = open_ranges.merge()
 
     return merged_ranges
