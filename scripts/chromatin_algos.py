@@ -13,6 +13,9 @@ BIN_SIZE = 100
 SIGNAL_COLUMN = 'TT_S0'
 SAMPLE_FILEPATH = '../inputs/subset1.rds'
 
+ALL_SIGNALS = ['TT_S0', 'TT_S1', 'TT_S2']
+OTHER_SIGNALS = ALL_SIGNALS.remove(SIGNAL_COLUMN)
+
 def add_bins(offset, chromosome):
     chromo_start = chromosome["start"].min() - 1
     chromo_end = chromosome["start"].max()
@@ -46,7 +49,7 @@ def algo1d(bin_offset = 0):
     df.drop(['seqnames', 'start', 'end', 'CG_ID'], axis=1, inplace=True)
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum()
 
-    sumos.drop(['TT_S1', 'TT_S2'], axis=1, inplace=True)
+    sumos.drop(OTHER_SIGNALS, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -86,15 +89,16 @@ def algo2d(scale = 1, bin_offset = 0):
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(['TT_S1', 'TT_S2', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
+    sumos.drop(['bin_offset_' + str(bin_offset)], axis=1, inplace=True)
+    sumos.drop(OTHER_SIGNALS, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
     print(sumos.shape)
     print(sumos.dtypes)
 
-    sumos['signal'] = sumos['TT_S0'] * scale
-    sumos.drop(['TT_S0'], axis=1, inplace=True)
+    sumos['signal'] = sumos[SIGNAL_COLUMN] * scale
+    sumos.drop([SIGNAL_COLUMN], axis=1, inplace=True)
 
     print("SUMOS NEW")
     print(sumos[:50])
@@ -132,7 +136,7 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(['TT_S1', 'TT_S2'], axis=1, inplace=True)
+    sumos.drop(OTHER_SIGNALS, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -197,7 +201,7 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(['TT_S1', 'TT_S2'], axis=1, inplace=True)
+    sumos.drop(OTHER_SIGNALS, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -247,7 +251,7 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(['TT_S1', 'TT_S2'], axis=1, inplace=True)
+    sumos.drop(OTHER_SIGNALS, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -319,7 +323,7 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(['TT_S1', 'TT_S2'], axis=1, inplace=True)
+    sumos.drop(OTHER_SIGNALS, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])

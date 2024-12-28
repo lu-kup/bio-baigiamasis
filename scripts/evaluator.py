@@ -35,6 +35,8 @@ def evaluate(merged_ranges, model_name = '', chr_subset_size = CHR18_SUBSET_SIZE
     percentage_overlap = atac_int_length / atac_length
     evaluation['ATACseq_overlap'] = percentage_overlap
 
+    percentage_overlap_ranges = atac_int_length / merged_ranges.length
+    evaluation['ATACseq_ranges_overlap'] = percentage_overlap_ranges
 
     dnaseq_intersection = merged_ranges.intersect(dnaseq)
     dnaseq_int_length = dnaseq_intersection.length
@@ -42,6 +44,9 @@ def evaluate(merged_ranges, model_name = '', chr_subset_size = CHR18_SUBSET_SIZE
     dnaseq_length = dnaseq[(dnaseq.Chromosome == '18') & (dnaseq.Start < chr_subset_size)].length
     percentage_overlap2 = dnaseq_int_length / dnaseq_length
     evaluation['DNAseq_overlap'] = percentage_overlap2
+
+    percentage_overlap_ranges2 = dnaseq_int_length / merged_ranges.length
+    evaluation['DNAseq_ranges_overlap'] = percentage_overlap_ranges2
 
     gencode = pr.read_gtf("../inputs/gencode_chr18.gtf")
 
