@@ -49,7 +49,7 @@ def algo1d(bin_offset = 0):
     df.drop(['seqnames', 'start', 'end', 'CG_ID'], axis=1, inplace=True)
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum()
 
-    sumos.drop(OTHER_SIGNALS, axis=1, inplace=True)
+    sumos.drop(columns=OTHER_SIGNALS, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -90,7 +90,7 @@ def algo2d(scale = 1, bin_offset = 0):
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
     sumos.drop(['bin_offset_' + str(bin_offset)], axis=1, inplace=True)
-    sumos.drop(OTHER_SIGNALS, axis=1, inplace=True)
+    sumos.drop(columns=OTHER_SIGNALS, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -136,7 +136,7 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(OTHER_SIGNALS, axis=1, inplace=True)
+    sumos.drop(columns=OTHER_SIGNALS, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -201,7 +201,7 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(OTHER_SIGNALS, axis=1, inplace=True)
+    sumos.drop(columns=OTHER_SIGNALS, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -251,7 +251,7 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(OTHER_SIGNALS, axis=1, inplace=True)
+    sumos.drop(columns=OTHER_SIGNALS, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -323,7 +323,7 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(OTHER_SIGNALS, axis=1, inplace=True)
+    sumos.drop(columns=OTHER_SIGNALS, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])

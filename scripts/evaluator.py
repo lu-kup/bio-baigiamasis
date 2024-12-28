@@ -70,6 +70,20 @@ def evaluate(merged_ranges, model_name = '', chr_subset_size = CHR18_SUBSET_SIZE
 
     return evaluation
 
+def process_ranges(merged_ranges):
+    if len(merged_ranges) == 0:
+        print("Failed to identify open ranges.")
+        return merged_ranges
+
+    merged_ranges.Length = merged_ranges.End - merged_ranges.Start
+    processed_ranges = merged_ranges[merged_ranges.Length >= 75]
+    processed_ranges = processed_ranges.merge(slack = 50)
+
+    return processed_ranges
+
+def evaluate_processed(merged_ranges, model_name = '', chr_subset_size = CHR18_SUBSET_SIZE):
+    return evaluate(process_ranges(merged_ranges), model_name, chr_subset_size)
+
 def count_clusters(filename = "../outputs/output_prototypes.csv", dataframe = None, model_name = ''):
     if dataframe is None:
         df = pd.read_csv(filename, sep = '\t', index_col=0)
