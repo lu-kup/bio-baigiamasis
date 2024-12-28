@@ -3,11 +3,12 @@ import pandas as pd
 import numpy as np
 
 BIN_SIZE = 100
+CROMOSOME_NO = "18"
 
 #pd.set_option('display.min_rows', 500)
 #pd.set_option('display.max_rows', 500)
 
-def get_ranges(offset = 0):
+def get_ranges(from_array, to_array):
     gr = pr.read_gtf("../inputs/gencode_chr18.gtf")
 
     # {gene,transcript,exon,CDS,UTR,start_codon,stop_codon,Selenocysteine}
@@ -17,16 +18,7 @@ def get_ranges(offset = 0):
     CDSs = gr[gr.Feature == 'CDS']
 
     grs = {'genes': genes, 'transcripts': transcripts, 'exons': exons, 'CDSs': CDSs}
-
-    # HARDCODED
-    chromo_start = 3000016
-    chromo_end = 9717593
-
-    breaks = list(np.arange(chromo_start + offset, chromo_end, BIN_SIZE))
-    from_array = [chromo_start] + breaks
-    to_array = breaks + [chromo_end]
-
-    bins = pr.PyRanges(chromosomes="18", starts=from_array, ends=to_array)
+    bins = pr.PyRanges(chromosomes=CROMOSOME_NO, starts=from_array, ends=to_array)
 
     overlaps_result = pr.count_overlaps(grs, bins)
     overlaps_df = overlaps_result.df

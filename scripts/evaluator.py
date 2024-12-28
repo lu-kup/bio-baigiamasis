@@ -7,9 +7,10 @@ import pyranges as pr
 
 CHR18_SIZE = 90720763
 CHR18_SUBSET_SIZE = 9717594
-CHR18_SUBSET_SIZE_ADJ = CHR18_SUBSET_SIZE - 3000000
 
-def evaluate(merged_ranges, model_name = ''):
+def evaluate(merged_ranges, model_name = '', chr_subset_size = CHR18_SUBSET_SIZE):
+    chr_subset_size_adj = chr_subset_size - 3000000
+
     df2 = pyreadr.read_r('../inputs/ATAC_dt.RDS')[None]
     df2.rename(columns={"start": "Start", "end": "End", "seqnames": "Chromosome"}, inplace=True)
     atac = pr.PyRanges(df2)
@@ -30,7 +31,7 @@ def evaluate(merged_ranges, model_name = ''):
     atac_intersection = atac.intersect(merged_ranges)
     atac_int_length = atac_intersection.length
     # Edited for subset
-    atac_length = atac[(atac.Chromosome == '18') & (atac.Start < CHR18_SUBSET_SIZE)].length
+    atac_length = atac[(atac.Chromosome == '18') & (atac.Start < chr_subset_size)].length
     percentage_overlap = atac_int_length / atac_length
     evaluation['ATACseq_overlap'] = percentage_overlap
 
@@ -38,7 +39,7 @@ def evaluate(merged_ranges, model_name = ''):
     dnaseq_intersection = merged_ranges.intersect(dnaseq)
     dnaseq_int_length = dnaseq_intersection.length
     # Edited for subset
-    dnaseq_length = dnaseq[(dnaseq.Chromosome == '18') & (dnaseq.Start < CHR18_SUBSET_SIZE)].length
+    dnaseq_length = dnaseq[(dnaseq.Chromosome == '18') & (dnaseq.Start < chr_subset_size)].length
     percentage_overlap2 = dnaseq_int_length / dnaseq_length
     evaluation['DNAseq_overlap'] = percentage_overlap2
 
@@ -58,8 +59,8 @@ def evaluate(merged_ranges, model_name = ''):
 
     evaluation['genes_overlap'] = percentage_genes
     # Edited for subset
-    evaluation['percentage_open'] = output_length / CHR18_SUBSET_SIZE
-    evaluation['percentage_open_adj'] = output_length / CHR18_SUBSET_SIZE_ADJ
+    evaluation['percentage_open'] = output_length / chr_subset_size
+    evaluation['percentage_open_adj'] = output_length / chr_subset_size_adj
     evaluation['model_name'] = model_name
 
     return evaluation

@@ -11,7 +11,6 @@ import math
 
 BIN_SIZE = 100
 SIGNAL_COLUMN = 'TT_S0'
-SIGNAL_LABEL = 'TT_S0'
 
 def add_bins(offset, chromosome):
     chromo_start = chromosome["start"].min() - 1
@@ -27,7 +26,7 @@ def add_bins(offset, chromosome):
 
     chromosome['bin_offset_' + str(offset)] = pd.cut(chromosome['start'], bins=bins)
 
-    return bins
+    return from_array, to_array
 
 def algo1d(bin_offset = 0):
     result = pyreadr.read_r('../inputs/subset1.rds')
@@ -38,9 +37,9 @@ def algo1d(bin_offset = 0):
 
     add_bins(bin_offset, df)
 
-    print("HEAD w BINS")
+    print("HEAD with BINS")
     print(df.head())
-    print("TAIL w BINS")
+    print("TAIL with BINS")
     print(df.tail())
     print()
 
@@ -62,15 +61,6 @@ def algo1d(bin_offset = 0):
     sumos['labels'] = labels
     open_ratio = labels.count(1)/len(labels)
 
-    a = 10
-    counter = 0
-    for labl in labels:
-        b = a
-        a = labl
-        if a != b:
-            counter += 1
-    print(counter - 1)
-
     print(open_ratio)
     print(kmeans.labels_[:1000])
 
@@ -86,9 +76,9 @@ def algo2d(scale = 1, bin_offset = 0):
 
     add_bins(bin_offset, df)
 
-    print("HEAD w BINS")
+    print("HEAD with BINS")
     print(df.head())
-    print("TAIL w BINS")
+    print("TAIL with BINS")
     print(df.tail())
     print()
 
@@ -117,15 +107,6 @@ def algo2d(scale = 1, bin_offset = 0):
     sumos['labels'] = labels
     open_ratio = labels.count(1)/len(labels)
 
-    a = 10
-    counter = 0
-    for labl in labels:
-        b = a
-        a = labl
-        if a != b:
-            counter += 1
-    print(counter - 1)
-
     print(open_ratio)
     print(kmeans.labels_[:1000])
 
@@ -140,11 +121,11 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
     print("HEAD")
     print(df.head())
 
-    add_bins(bin_offset, df)
+    from_array, to_array = add_bins(bin_offset, df)
 
-    print("HEAD w BINS")
+    print("HEAD with BINS")
     print(df.head())
-    print("TAIL w BINS")
+    print("TAIL with BINS")
     print(df.tail())
     print()
 
@@ -159,7 +140,7 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
     print(sumos.shape)
     print(sumos.dtypes)
 
-    ranges = read_ranges.get_ranges(bin_offset)
+    ranges = read_ranges.get_ranges(from_array, to_array)
     print("sumos ilgis:", len(sumos))
     print("ranges ilgis:", len(ranges))
 
@@ -206,11 +187,11 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
     print("HEAD")
     print(df.head())
 
-    add_bins(bin_offset, df)
+    from_array, to_array = add_bins(bin_offset, df)
 
-    print("HEAD w BINS")
+    print("HEAD with BINS")
     print(df.head())
-    print("TAIL w BINS")
+    print("TAIL with BINS")
     print(df.tail())
     print()
 
@@ -225,7 +206,7 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
     print(sumos.shape)
     print(sumos.dtypes)
 
-    ranges = read_ranges.get_ranges(bin_offset)
+    ranges = read_ranges.get_ranges(from_array, to_array)
     print("sumos ilgis:", len(sumos))
     print("ranges ilgis:", len(ranges))
 
@@ -257,11 +238,11 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
     print("HEAD")
     print(df.head())
 
-    add_bins(bin_offset, df)
+    from_array, to_array = add_bins(bin_offset, df)
 
-    print("HEAD w BINS")
+    print("HEAD with BINS")
     print(df.head())
-    print("TAIL w BINS")
+    print("TAIL with BINS")
     print(df.tail())
     print()
 
@@ -276,7 +257,7 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
     print(sumos.shape)
     print(sumos.dtypes)
 
-    ranges = read_ranges.get_ranges(bin_offset)
+    ranges = read_ranges.get_ranges(from_array, to_array)
     print("sumos ilgis:", len(sumos))
     print("ranges ilgis:", len(ranges))
 
@@ -330,11 +311,11 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
     print("HEAD")
     print(df.head())
 
-    add_bins(bin_offset, df)
+    from_array, to_array = add_bins(bin_offset, df)
 
-    print("HEAD w BINS")
+    print("HEAD with BINS")
     print(df.head())
-    print("TAIL w BINS")
+    print("TAIL with BINS")
     print(df.tail())
     print()
 
@@ -349,7 +330,7 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
     print(sumos.shape)
     print(sumos.dtypes)
 
-    ranges = read_ranges.get_ranges(bin_offset)
+    ranges = read_ranges.get_ranges(from_array, to_array)
     print("sumos ilgis:", len(sumos))
     print("ranges ilgis:", len(ranges))
 
