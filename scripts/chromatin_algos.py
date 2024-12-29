@@ -125,7 +125,7 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
     print(df.head())
 
     from_array, to_array = add_bins(bin_offset, df)
-    df['count'] = 1
+    df['target_count'] = 1
 
     print("HEAD with BINS")
     print(df.head())
@@ -150,7 +150,7 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
 
     sumos_features = pd.concat([sumos.reset_index(drop=True), ranges.reset_index(drop=True)], axis=1)
     model_input = sumos_features.copy()
-    model_input.drop(['count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
+    model_input.drop(['target_count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
     print("Model input - NO SCALE")
     print(model_input)
 
@@ -191,7 +191,7 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
     print(df.head())
 
     from_array, to_array = add_bins(bin_offset, df)
-    df['count'] = 1
+    df['target_count'] = 1
 
     print("HEAD with BINS")
     print(df.head())
@@ -216,7 +216,7 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
 
     sumos_features = pd.concat([sumos.reset_index(drop=True), ranges.reset_index(drop=True)], axis=1)
     model_input = sumos_features.copy()
-    model_input.drop(['count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
+    model_input.drop(['target_count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
     print(model_input)
 
     # Skaičiuojam
@@ -242,7 +242,7 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
     print(df.head())
 
     from_array, to_array = add_bins(bin_offset, df)
-    df['count'] = 1
+    df['target_count'] = 1
 
     print("HEAD with BINS")
     print(df.head())
@@ -275,7 +275,7 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
 
     for i in range(batch_no):
         model_input = sumos_features.copy()[start_index:end_index]
-        model_input.drop(['count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
+        model_input.drop(['target_count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
         print(model_input)
 
         # Skaičiuojam
@@ -315,7 +315,7 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
     print(df.head())
 
     from_array, to_array = add_bins(bin_offset, df)
-    df['count'] = 1
+    df['target_count'] = 1
 
     print("HEAD with BINS")
     print(df.head())
@@ -348,8 +348,9 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
     signal_density = get_binned_signal_density(sumos_features)
 
     for i in range(batch_no):
-        model_input = sumos_features.copy()[start_index:end_index]
-        model_input.drop(['count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
+        batch = sumos_features.copy()[start_index:end_index]
+        model_input = batch.copy()
+        model_input.drop(['target_count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
         print(model_input)
 
         # Skaičiuojam
@@ -361,9 +362,9 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
         print("Running DBSCAN...")
         clustering.fit(distance_matrix)
 
-        model_input['labels'] = clustering.labels_
-        update_labels(model_input, threshold, signal_density)
-        labels.loc[start_index:end_index - 1, 'labels'] = model_input['labels']
+        batch['labels'] = clustering.labels_
+        update_labels(batch, threshold, signal_density)
+        labels.loc[start_index:end_index - 1, 'labels'] = batch['labels']
 
         start_index += BATCH_SIZE
         end_index += BATCH_SIZE
@@ -404,13 +405,18 @@ def map_clusters(dataframe, threshold, signal_density = None):
 
     for cluster_label in cluster_labels:
         cluster = dataframe[dataframe['labels'] == cluster_label]
-        cluster_length = len(cluster) * BIN_SIZE
-        if cluster_length == 0:
+        if len(cluster) == 0:
             continue
         cluster_signal = cluster[SIGNAL_COLUMN].sum()
+        cluster_target_count = cluster['target_count'].sum()
         print("cluster signal", cluster_signal)
-        print("cluster length", cluster_length)
-        cluster_density = cluster_signal / cluster_length
+        print("cluster target count", cluster_target_count)
+
+        if cluster_target_count != 0:
+            cluster_density = cluster_signal / cluster_target_count
+        else:
+            cluster_density = 0
+
         print("!!cluster density", cluster_density)
         if cluster_density > threshold_density:
             mapping[cluster_label] = 1
@@ -454,7 +460,11 @@ def bins_to_ranges(df, model_name):
     return merged_ranges
 
 def get_binned_signal_density(dataframe):
-    return dataframe[SIGNAL_COLUMN].sum() / (dataframe['starting_nt'].max() + BIN_SIZE - dataframe['starting_nt'].min())
+    if (dataframe['target_count'].sum() != 0):
+        return dataframe[SIGNAL_COLUMN].sum() / dataframe['target_count'].sum()
+    else:
+        print("ERROR: Zero signal density in dataframe")
+        return float('inf')
 
 if __name__ == "__main__":
     import evaluator
