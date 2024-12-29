@@ -125,6 +125,7 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
     print(df.head())
 
     from_array, to_array = add_bins(bin_offset, df)
+    df['count'] = 1
 
     print("HEAD with BINS")
     print(df.head())
@@ -149,7 +150,7 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
 
     sumos_features = pd.concat([sumos.reset_index(drop=True), ranges.reset_index(drop=True)], axis=1)
     model_input = sumos_features.copy()
-    model_input.drop(['starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
+    model_input.drop(['count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
     print("Model input - NO SCALE")
     print(model_input)
 
@@ -190,6 +191,7 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
     print(df.head())
 
     from_array, to_array = add_bins(bin_offset, df)
+    df['count'] = 1
 
     print("HEAD with BINS")
     print(df.head())
@@ -214,7 +216,7 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
 
     sumos_features = pd.concat([sumos.reset_index(drop=True), ranges.reset_index(drop=True)], axis=1)
     model_input = sumos_features.copy()
-    model_input.drop(['starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
+    model_input.drop(['count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
     print(model_input)
 
     # Skaičiuojam
@@ -240,6 +242,7 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
     print(df.head())
 
     from_array, to_array = add_bins(bin_offset, df)
+    df['count'] = 1
 
     print("HEAD with BINS")
     print(df.head())
@@ -272,7 +275,7 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
 
     for i in range(batch_no):
         model_input = sumos_features.copy()[start_index:end_index]
-        model_input.drop(['starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
+        model_input.drop(['count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
         print(model_input)
 
         # Skaičiuojam
@@ -312,6 +315,7 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
     print(df.head())
 
     from_array, to_array = add_bins(bin_offset, df)
+    df['count'] = 1
 
     print("HEAD with BINS")
     print(df.head())
@@ -345,7 +349,7 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
 
     for i in range(batch_no):
         model_input = sumos_features.copy()[start_index:end_index]
-        model_input.drop(['starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
+        model_input.drop(['count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
         print(model_input)
 
         # Skaičiuojam
