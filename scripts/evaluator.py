@@ -6,7 +6,7 @@ import pandas as pd
 import pyranges as pr
 
 CHR18_SIZE = 90720763
-CHR18_SUBSET_SIZE = 9717594
+CHR18_SUBSET_SIZE = 18261711
 
 def evaluate(merged_ranges, model_name = '', chr_subset_size = CHR18_SUBSET_SIZE):
     chr_subset_size_adj = chr_subset_size - 3000000

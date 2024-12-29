@@ -5,9 +5,10 @@ cat("Number of columns: ", ncol(t1))
 print("\n")
 cat("Number of rows: ", nrow(t1))
 
-sorted_t1 <- t1[order(t1$start), ]
+filtered_t1 <- t1[t1$seqnames == 18, ]
+sorted_t1 <- filtered_t1[order(filtered_t1$start), ]
 
-subset1=sorted_t1[1:700000,]
+subset1 <- sorted_t1[1:700000, ]
 
 cat("Number of columns: ", ncol(subset1))
 print("\n")
