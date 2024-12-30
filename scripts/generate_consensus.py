@@ -17,6 +17,9 @@ def generate_consensus_5x20(algorithm, params):
     overlaps = pr.count_overlaps(open_ranges_dict)
     print("OVERLAPS", overlaps)
 
+    if (len(overlaps) == 0):
+        return overlaps
+
     overlaps_df = overlaps.df
     filtered = overlaps_df.filter(regex = "offset_")
     overlaps_df['predict_state_SUM'] = filtered.sum(axis = 1)

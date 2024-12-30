@@ -27,7 +27,7 @@ def evaluate(merged_ranges, model_name = '', chr_subset_size = CHR18_SUBSET_SIZE
 
     merged_ranges.Length = merged_ranges.End - merged_ranges.Start
     evaluation = merged_ranges.Length.describe()
-    evaluation['mode'] = merged_ranges.Length.mode().item()
+    evaluation['mode'] = merged_ranges.Length.mode().iloc[0].item()
 
     atac_intersection = atac.intersect(merged_ranges)
     atac_int_length = atac_intersection.length
