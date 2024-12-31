@@ -356,7 +356,7 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
         # Skaičiuojam
         print("Length of input:", len(model_input))
         print("Calculating distances...")
-        distance_matrix = gower.gower_matrix(model_input, cat_features=[1, 2, 3, 4])
+        distance_matrix = gower.gower_matrix(model_input, cat_features=[False, True, True, True, True])
         clustering = DBSCAN(eps=eps, min_samples=min_samples, metric = "precomputed")
 
         print("Running DBSCAN...")
