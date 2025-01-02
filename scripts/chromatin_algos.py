@@ -220,7 +220,8 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
     print(model_input)
 
     # Skaičiuojam
-    kprotos = KPrototypes(n_clusters=n_clusters, init='Huang', gamma=gamma, verbose=1)
+    kprotos = KPrototypes(n_clusters=n_clusters, init='random', gamma=gamma, verbose=1)
+    print("random init")
     kprotos.fit(model_input, categorical=[1, 2, 3, 4])
     labels = list(kprotos.labels_)
     sumos_features['labels'] = kprotos.labels_
