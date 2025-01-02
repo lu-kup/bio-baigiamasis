@@ -6,7 +6,7 @@ import generate_consensus
 ITERATIONS = 8
 FILEPATH = '../outputs/xresults_kprototypes2.csv'
 
-thresholds = [1, 2]
+thresholds = [2, 3]
 
 result = evaluator.evaluate(merged_ranges = chromatin_algos.algo5d_aggregated(), model_name="test run")
 
