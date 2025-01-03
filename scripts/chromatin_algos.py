@@ -11,7 +11,7 @@ import math
 
 BIN_SIZE = 100
 SIGNAL_COLUMN = 'TT_S0'
-SAMPLE_FILEPATH = '../inputs/subset1.rds'
+SAMPLE_FILEPATH = '../inputs/subset2.rds'
 
 ALL_SIGNALS = ['TT_S0', 'TT_S1', 'TT_S2']
 OTHER_SIGNALS = ['TT_S1', 'TT_S2']
