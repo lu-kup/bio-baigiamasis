@@ -1,0 +1,20 @@
+	Length
+count	9292.0
+mean	141.78217821782178
+std	98.65034055712474
+min	75.0
+25%	90.0
+50%	105.0
+75%	155.0
+max	1190.0
+mode	95.0
+ATACseq_overlap	0.4412972961244571
+ATACseq_ranges_overlap	0.18525549550643672
+ATACseq_Jaccard	0.15006010077254855
+DNAseq_overlap	0.3927437662029471
+DNAseq_ranges_overlap	0.2663195287830945
+DNAseq_Jaccard	0.1886408994718098
+genes_overlap	0.7220594486276415
+percentage_open	0.014521923718829393
+percentage_open_adj	0.015018565216994293
+model_name	k-means processed

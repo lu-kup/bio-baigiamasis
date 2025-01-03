@@ -1,0 +1,20 @@
+	Length
+count	10048.0
+mean	138.84255573248407
+std	94.26737560382006
+min	75.0
+25%	90.0
+50%	100.0
+75%	150.0
+max	1190.0
+mode	95.0
+ATACseq_overlap	0.42411464981972957
+ATACseq_ranges_overlap	0.16813252191614877
+ATACseq_Jaccard	0.136882377794429
+DNAseq_overlap	0.3898233179158141
+DNAseq_ranges_overlap	0.24962618899139125
+DNAseq_Jaccard	0.17949278294192078
+genes_overlap	0.7230967177744805
+percentage_open	0.01537784685519014
+percentage_open_adj	0.01590376043582749
+model_name	dbscan processed
