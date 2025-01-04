@@ -5,5 +5,5 @@
 
 set -x
 date
-srun python3 run_dbscan_final.py
+srun python3 run_dbscan_expression.py
 date
