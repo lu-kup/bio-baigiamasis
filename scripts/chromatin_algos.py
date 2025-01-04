@@ -12,8 +12,8 @@ import math
 BIN_SIZE = 100
 SAMPLE_FILEPATH = '../inputs/subset2.rds'
 
-SIGNAL_COLUMN = 'TT_S1'
-OTHER_SIGNALS = ['TT_S0', 'TT_S2']
+SIGNAL_COLUMN = 'TT_S2'
+OTHER_SIGNALS = ['TT_S0', 'TT_S1']
 
 def add_bins(offset, chromosome):
     chromo_start = chromosome["start"].min() - 1
