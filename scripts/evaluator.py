@@ -7,6 +7,7 @@ import pyranges as pr
 import config
 from matplotlib import cbook
 
+chr = config.CHR
 chr_size = config.CHR_SIZE
 gencode_data_path = config.GENCODE_DATA_PATH
 
@@ -34,7 +35,7 @@ def evaluate(merged_ranges, model_name = '', chr_subset_size = chr_size):
     atac_intersection = atac.intersect(merged_ranges)
     atac_int_length = atac_intersection.length
     # Edited for subset
-    atac_length = atac[(atac.Chromosome == '18') & (atac.Start < chr_subset_size)].length
+    atac_length = atac[(atac.Chromosome == chr) & (atac.Start < chr_subset_size)].length
     percentage_overlap = atac_int_length / atac_length
     evaluation['ATACseq_overlap'] = percentage_overlap
 
@@ -42,7 +43,7 @@ def evaluate(merged_ranges, model_name = '', chr_subset_size = chr_size):
     evaluation['ATACseq_ranges_overlap'] = percentage_overlap_ranges
 
     # Jaccard similarity
-    atac_subset = atac[(atac.Chromosome == '18') & (atac.Start < chr_subset_size)]
+    atac_subset = atac[(atac.Chromosome == chr) & (atac.Start < chr_subset_size)]
     atac_union = atac_subset.set_union(merged_ranges)
 
     if atac_union.length == 0:
@@ -54,7 +55,7 @@ def evaluate(merged_ranges, model_name = '', chr_subset_size = chr_size):
     dnaseq_intersection = merged_ranges.intersect(dnaseq)
     dnaseq_int_length = dnaseq_intersection.length
     # Edited for subset
-    dnaseq_length = dnaseq[(dnaseq.Chromosome == '18') & (dnaseq.Start < chr_subset_size)].length
+    dnaseq_length = dnaseq[(dnaseq.Chromosome == chr) & (dnaseq.Start < chr_subset_size)].length
     percentage_overlap2 = dnaseq_int_length / dnaseq_length
     evaluation['DNAseq_overlap'] = percentage_overlap2
 
@@ -62,7 +63,7 @@ def evaluate(merged_ranges, model_name = '', chr_subset_size = chr_size):
     evaluation['DNAseq_ranges_overlap'] = percentage_overlap_ranges2
 
     # Jaccard similarity
-    dnaseq_subset = dnaseq[(dnaseq.Chromosome == '18') & (dnaseq.Start < chr_subset_size)]
+    dnaseq_subset = dnaseq[(dnaseq.Chromosome == chr) & (dnaseq.Start < chr_subset_size)]
     dnaseq_union = dnaseq_subset.set_union(merged_ranges)
 
     if dnaseq_union.length == 0:
@@ -74,11 +75,11 @@ def evaluate(merged_ranges, model_name = '', chr_subset_size = chr_size):
     gencode = pr.read_gtf(gencode_data_path)
 
     # {gene,transcript,exon,CDS,UTR,start_codon,stop_codon,Selenocysteine}
-    genes18 = gencode[gencode.Feature == 'gene']
-    genes18.Chromosome = '18'
-    merged_genes18 = genes18.merge()
+    genes_chr = gencode[gencode.Feature == 'gene']
+    genes_chr.Chromosome = chr
+    merged_genes_chr = genes_chr.merge()
 
-    genes_intersection = merged_ranges.intersect(merged_genes18)
+    genes_intersection = merged_ranges.intersect(merged_genes_chr)
     genes_int_length = genes_intersection.length
 
     output_length = merged_ranges.length

@@ -3,22 +3,24 @@
 
 import pyranges as pr
 import pandas as pd
-
+import config
 
 OUTPUT_RANGES_PATH = '../outputs/ATAC.tsv'
-GENE_DATA_PATH = '../inputs/gencode_chr18.gtf'
 TARGET_GENE_NAME = 'Tmx3'
 #TARGET_GENE_NAME = 'Cul2'
 
+gencode_data_path = config.GENCODE_DATA_PATH
+chr = config.CHR
+
 ranges = pd.read_csv(OUTPUT_RANGES_PATH, sep='\t')
 atac_ranges = pr.PyRanges(ranges)
-genes = pr.read_gtf(GENE_DATA_PATH)
+genes = pr.read_gtf(gencode_data_path)
 genes = genes[genes.Feature == 'gene']
 
 genes_df = genes.df
 genes_df = genes_df[genes_df["gene_name"] == TARGET_GENE_NAME]
 gene_ranges = pr.PyRanges(genes_df)
-gene_ranges.Chromosome = '18'
+gene_ranges.Chromosome = chr
 
 
 overlap_dict = {'gene':gene_ranges, 'ranges':atac_ranges}

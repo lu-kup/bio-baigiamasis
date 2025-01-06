@@ -4,8 +4,8 @@ import numpy as np
 import config
 
 BIN_SIZE = 100
-CROMOSOME_NO = "18"
 
+chromosome_no = config.CHR
 gencode_data_path = config.GENCODE_DATA_PATH
 
 #pd.set_option('display.min_rows', 500)
@@ -21,7 +21,7 @@ def get_ranges(from_array, to_array):
     CDSs = gr[gr.Feature == 'CDS']
 
     grs = {'genes': genes, 'transcripts': transcripts, 'exons': exons, 'CDSs': CDSs}
-    bins = pr.PyRanges(chromosomes=CROMOSOME_NO, starts=from_array, ends=to_array)
+    bins = pr.PyRanges(chromosomes=chromosome_no, starts=from_array, ends=to_array)
 
     overlaps_result = pr.count_overlaps(grs, bins)
     overlaps_df = overlaps_result.df
