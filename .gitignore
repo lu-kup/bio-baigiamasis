@@ -1,4 +1,5 @@
 inputs/gencode.vM36.annotation.gtf
+inputs/gencode.vM25.annotation.gtf
 inputs/exampleForLukas.RDS
 outputs/output*
 .DS_Store

@@ -5,5 +5,5 @@
 
 set -x
 date
-srun python3 run_kprototypes_gamma.py
+srun python3 run_kmeans_scale.py
 date
