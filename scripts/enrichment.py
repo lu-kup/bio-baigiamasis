@@ -2,8 +2,9 @@ import pyreadr
 import pandas as pd
 import pyranges as pr
 import numpy as np
+import config
 
-SIGNAL_COLUMN = 'TT_S0'
+SIGNAL_COLUMN = config.SIGNAL_COLUMN
 
 def calculate_norm_signal(ranges, targets_df):
     ranges = ranges.sort()

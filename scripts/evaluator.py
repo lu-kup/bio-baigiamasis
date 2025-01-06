@@ -4,11 +4,11 @@
 import pyreadr
 import pandas as pd
 import pyranges as pr
+import config
 
-CHR18_SIZE = 90720763
-CHR18_SUBSET_SIZE = 18261711
+chr_size = config.CHR_SIZE
 
-def evaluate(merged_ranges, model_name = '', chr_subset_size = CHR18_SIZE):
+def evaluate(merged_ranges, model_name = '', chr_subset_size = chr_size):
     chr_subset_size_adj = chr_subset_size - 3000000
 
     df2 = pyreadr.read_r('../inputs/ATAC_dt.RDS')[None]
@@ -102,7 +102,7 @@ def process_ranges(merged_ranges):
 
     return processed_ranges
 
-def evaluate_processed(merged_ranges, model_name = '', chr_subset_size = CHR18_SIZE):
+def evaluate_processed(merged_ranges, model_name = '', chr_subset_size = chr_size):
     return evaluate(process_ranges(merged_ranges), model_name, chr_subset_size)
 
 def count_clusters(filename = "../outputs/output_prototypes.csv", dataframe = None, model_name = ''):

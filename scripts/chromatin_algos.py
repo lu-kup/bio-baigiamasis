@@ -8,12 +8,13 @@ from kmodes.kprototypes import KPrototypes
 import gower
 import read_ranges
 import math
+import config
 
 BIN_SIZE = 100
-SAMPLE_FILEPATH = '../inputs/subset2.rds'
 
-SIGNAL_COLUMN = 'TT_S2'
-OTHER_SIGNALS = ['TT_S0', 'TT_S1']
+sample_filepath = config.SAMPLE_FILEPATH
+signal_column = config.SIGNAL_COLUMN
+other_signals = config.OTHER_SIGNALS
 
 def add_bins(offset, chromosome):
     chromo_start = chromosome["start"].min() - 1
@@ -32,7 +33,7 @@ def add_bins(offset, chromosome):
     return from_array, to_array
 
 def algo1d(bin_offset = 0):
-    df = pyreadr.read_r(SAMPLE_FILEPATH)[None]
+    df = pyreadr.read_r(sample_filepath)[None]
 
     print("HEAD")
     print(df.head())
@@ -48,7 +49,7 @@ def algo1d(bin_offset = 0):
     df.drop(['seqnames', 'start', 'end', 'CG_ID'], axis=1, inplace=True)
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum()
 
-    sumos.drop(columns=OTHER_SIGNALS, axis=1, inplace=True)
+    sumos.drop(columns=other_signals, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -71,7 +72,7 @@ def algo1d(bin_offset = 0):
     return sumos
 
 def algo2d(scale = 1, bin_offset = 0):
-    df = pyreadr.read_r(SAMPLE_FILEPATH)[None]
+    df = pyreadr.read_r(sample_filepath)[None]
 
     print("HEAD")
     print(df.head())
@@ -89,15 +90,15 @@ def algo2d(scale = 1, bin_offset = 0):
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
     sumos.drop(['bin_offset_' + str(bin_offset)], axis=1, inplace=True)
-    sumos.drop(columns=OTHER_SIGNALS, axis=1, inplace=True)
+    sumos.drop(columns=other_signals, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
     print(sumos.shape)
     print(sumos.dtypes)
 
-    sumos['signal'] = sumos[SIGNAL_COLUMN] * scale
-    sumos.drop([SIGNAL_COLUMN], axis=1, inplace=True)
+    sumos['signal'] = sumos[signal_column] * scale
+    sumos.drop([signal_column], axis=1, inplace=True)
 
     print("SUMOS NEW")
     print(sumos[:50])
@@ -118,7 +119,7 @@ def algo2d(scale = 1, bin_offset = 0):
     return sumos
 
 def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
-    df = pyreadr.read_r(SAMPLE_FILEPATH)[None]
+    df = pyreadr.read_r(sample_filepath)[None]
 
     print("HEAD")
     print(df.head())
@@ -136,7 +137,7 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(columns=OTHER_SIGNALS, axis=1, inplace=True)
+    sumos.drop(columns=other_signals, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -184,7 +185,7 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
     return sumos_features
 
 def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
-    df = pyreadr.read_r(SAMPLE_FILEPATH)[None]
+    df = pyreadr.read_r(sample_filepath)[None]
 
     print("HEAD")
     print(df.head())
@@ -202,7 +203,7 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(columns=OTHER_SIGNALS, axis=1, inplace=True)
+    sumos.drop(columns=other_signals, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -235,7 +236,7 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
 def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
     BATCH_SIZE = 10000
 
-    df = pyreadr.read_r(SAMPLE_FILEPATH)[None]
+    df = pyreadr.read_r(sample_filepath)[None]
 
     print("HEAD")
     print(df.head())
@@ -253,7 +254,7 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(columns=OTHER_SIGNALS, axis=1, inplace=True)
+    sumos.drop(columns=other_signals, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -308,7 +309,7 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
 def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_offset = 0):
     BATCH_SIZE = 10000
 
-    df = pyreadr.read_r(SAMPLE_FILEPATH)[None]
+    df = pyreadr.read_r(sample_filepath)[None]
 
     print("HEAD")
     print(df.head())
@@ -326,7 +327,7 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
-    sumos.drop(columns=OTHER_SIGNALS, axis=1, inplace=True)
+    sumos.drop(columns=other_signals, axis=1, inplace=True)
 
     print("SUMOS")
     print(sumos[:50])
@@ -406,7 +407,7 @@ def map_clusters(dataframe, threshold, signal_density = None):
         cluster = dataframe[dataframe['labels'] == cluster_label]
         if len(cluster) == 0:
             continue
-        cluster_signal = cluster[SIGNAL_COLUMN].sum()
+        cluster_signal = cluster[signal_column].sum()
         cluster_target_count = cluster['target_count'].sum()
         print("cluster signal", cluster_signal)
         print("cluster target count", cluster_target_count)
@@ -432,10 +433,10 @@ def update_labels(dataframe, threshold = 1.5, signal_density = None):
 def evaluate_bins(df, model_name):
     evaluation = {}
     evaluation['model_name'] = model_name
-    evaluation['min_open_signal'] = df.loc[df["labels"] == open_label, SIGNAL_COLUMN].min()
-    evaluation['max_open_signal'] = df.loc[df["labels"] == open_label, SIGNAL_COLUMN].max()
-    evaluation['min_closed_signal'] = df.loc[df["labels"] != open_label, SIGNAL_COLUMN].min()
-    evaluation['max_closed_signal'] = df.loc[df["labels"] != open_label, SIGNAL_COLUMN].max()
+    evaluation['min_open_signal'] = df.loc[df["labels"] == open_label, signal_column].min()
+    evaluation['max_open_signal'] = df.loc[df["labels"] == open_label, signal_column].max()
+    evaluation['min_closed_signal'] = df.loc[df["labels"] != open_label, signal_column].min()
+    evaluation['max_closed_signal'] = df.loc[df["labels"] != open_label, signal_column].max()
     evaluation['no_clusters'] = max(df['labels']) + 1
 
     return evaluation
@@ -460,7 +461,7 @@ def bins_to_ranges(df, model_name):
 
 def get_binned_signal_density(dataframe):
     if (dataframe['target_count'].sum() != 0):
-        return dataframe[SIGNAL_COLUMN].sum() / dataframe['target_count'].sum()
+        return dataframe[signal_column].sum() / dataframe['target_count'].sum()
     else:
         print("ERROR: Zero signal density in dataframe")
         return float('inf')

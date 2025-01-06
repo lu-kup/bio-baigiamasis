@@ -1,15 +1,18 @@
 import pyranges as pr
 import pandas as pd
 import numpy as np
+import config
 
 BIN_SIZE = 100
 CROMOSOME_NO = "18"
+
+gencode_data_path = config.GENCODE_DATA_PATH
 
 #pd.set_option('display.min_rows', 500)
 #pd.set_option('display.max_rows', 500)
 
 def get_ranges(from_array, to_array):
-    gr = pr.read_gtf("../inputs/gencode_chr18.gtf")
+    gr = pr.read_gtf(gencode_data_path)
 
     # {gene,transcript,exon,CDS,UTR,start_codon,stop_codon,Selenocysteine}
     genes = gr[gr.Feature == 'gene']
