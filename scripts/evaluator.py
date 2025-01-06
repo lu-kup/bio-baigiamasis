@@ -8,6 +8,7 @@ import config
 from matplotlib import cbook
 
 chr_size = config.CHR_SIZE
+gencode_data_path = config.GENCODE_DATA_PATH
 
 def evaluate(merged_ranges, model_name = '', chr_subset_size = chr_size):
     chr_subset_size_adj = chr_subset_size - 3000000
@@ -70,7 +71,7 @@ def evaluate(merged_ranges, model_name = '', chr_subset_size = chr_size):
         evaluation['DNAseq_Jaccard'] = dnaseq_int_length / dnaseq_union.length
 
 
-    gencode = pr.read_gtf("../inputs/gencode_chr18.gtf")
+    gencode = pr.read_gtf(gencode_data_path)
 
     # {gene,transcript,exon,CDS,UTR,start_codon,stop_codon,Selenocysteine}
     genes18 = gencode[gencode.Feature == 'gene']
