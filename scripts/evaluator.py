@@ -76,7 +76,7 @@ def evaluate(merged_ranges, model_name = '', chr_subset_size = chr_size):
 
     # {gene,transcript,exon,CDS,UTR,start_codon,stop_codon,Selenocysteine}
     genes_chr = gencode[gencode.Feature == 'gene']
-    genes_chr.Chromosome = chr
+    genes_chr.Chromosome = genes_chr.Chromosome.str.lower().str.removeprefix('chr')
     merged_genes_chr = genes_chr.merge()
 
     genes_intersection = merged_ranges.intersect(merged_genes_chr)
