@@ -5,6 +5,7 @@ import pyreadr
 import pandas as pd
 import pyranges as pr
 import config
+from matplotlib import cbook
 
 chr_size = config.CHR_SIZE
 
@@ -82,12 +83,12 @@ def evaluate(merged_ranges, model_name = '', chr_subset_size = chr_size):
     output_length = merged_ranges.length
     percentage_genes = genes_int_length / output_length
 
-
     evaluation['genes_overlap'] = percentage_genes
     # Edited for subset
     evaluation['percentage_open'] = output_length / chr_subset_size
     evaluation['percentage_open_adj'] = output_length / chr_subset_size_adj
     evaluation['model_name'] = model_name
+    evaluation['boxplot_json'] = get_boxplot_stats(merged_ranges.Length)
 
     return evaluation
 
@@ -112,6 +113,13 @@ def count_clusters(filename = "../outputs/output_prototypes.csv", dataframe = No
         df = dataframe
 
     return pd.Series([max(df['labels']) + 1], name='no_clusters')
+
+def get_boxplot_stats(series):
+    stats = cbook.boxplot_stats(series)
+    stats_df = pd.DataFrame(stats)
+    stats_json = stats_df.loc[0].to_json()
+
+    return stats_json
 
 if __name__ == "__main__":
     print(evaluate())
