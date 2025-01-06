@@ -26,8 +26,6 @@ def add_bins(offset, chromosome):
 
     bins = pd.IntervalIndex.from_arrays(from_array, to_array)
 
-    print("BINS ", bins)
-
     chromosome['bin_offset_' + str(offset)] = pd.cut(chromosome['start'], bins=bins)
 
     return from_array, to_array
@@ -35,26 +33,12 @@ def add_bins(offset, chromosome):
 def algo1d(bin_offset = 0):
     df = pyreadr.read_r(sample_filepath)[None]
 
-    print("HEAD")
-    print(df.head())
-
     add_bins(bin_offset, df)
-
-    print("HEAD with BINS")
-    print(df.head())
-    print("TAIL with BINS")
-    print(df.tail())
-    print()
 
     df.drop(['seqnames', 'start', 'end', 'CG_ID'], axis=1, inplace=True)
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum()
 
     sumos.drop(columns=other_signals, axis=1, inplace=True)
-
-    print("SUMOS")
-    print(sumos[:50])
-    print(sumos.shape)
-    print(sumos.dtypes)
 
     # Skaičiuojam
     kmeans = KMeans(n_clusters=2)
@@ -74,16 +58,7 @@ def algo1d(bin_offset = 0):
 def algo2d(scale = 1, bin_offset = 0):
     df = pyreadr.read_r(sample_filepath)[None]
 
-    print("HEAD")
-    print(df.head())
-
     add_bins(bin_offset, df)
-
-    print("HEAD with BINS")
-    print(df.head())
-    print("TAIL with BINS")
-    print(df.tail())
-    print()
 
     df.drop(['seqnames', 'start', 'end', 'CG_ID'], axis=1, inplace=True)
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
@@ -92,16 +67,8 @@ def algo2d(scale = 1, bin_offset = 0):
     sumos.drop(['bin_offset_' + str(bin_offset)], axis=1, inplace=True)
     sumos.drop(columns=other_signals, axis=1, inplace=True)
 
-    print("SUMOS")
-    print(sumos[:50])
-    print(sumos.shape)
-    print(sumos.dtypes)
-
     sumos['signal'] = sumos[signal_column] * scale
     sumos.drop([signal_column], axis=1, inplace=True)
-
-    print("SUMOS NEW")
-    print(sumos[:50])
 
     # Skaičiuojam
     kmeans = KMeans(n_clusters=2)
@@ -121,28 +88,14 @@ def algo2d(scale = 1, bin_offset = 0):
 def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
     df = pyreadr.read_r(sample_filepath)[None]
 
-    print("HEAD")
-    print(df.head())
-
     from_array, to_array = add_bins(bin_offset, df)
     df['target_count'] = 1
-
-    print("HEAD with BINS")
-    print(df.head())
-    print("TAIL with BINS")
-    print(df.tail())
-    print()
 
     df.drop(['seqnames', 'start', 'end', 'CG_ID'], axis=1, inplace=True)
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
     sumos.drop(columns=other_signals, axis=1, inplace=True)
-
-    print("SUMOS")
-    print(sumos[:50])
-    print(sumos.shape)
-    print(sumos.dtypes)
 
     ranges = read_ranges.get_ranges(from_array, to_array)
     print("sumos ilgis:", len(sumos))
@@ -151,8 +104,6 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
     sumos_features = pd.concat([sumos.reset_index(drop=True), ranges.reset_index(drop=True)], axis=1)
     model_input = sumos_features.copy()
     model_input.drop(['target_count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
-    print("Model input - NO SCALE")
-    print(model_input)
 
     model_input['genes_scaled'] = model_input['genes'] * scale
     model_input.drop(['genes'], axis=1, inplace=True)
@@ -165,9 +116,6 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
 
     model_input['CDSs_scaled'] = model_input['CDSs'] * scale
     model_input.drop(['CDSs'], axis=1, inplace=True)
-
-    print("Model input - SCALED")
-    print(model_input)
 
     # Skaičiuojam
     kmeans = KMeans(n_clusters=n_clusters)
@@ -187,28 +135,14 @@ def algo5d(scale = 1, n_clusters = 2, bin_offset = 0):
 def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
     df = pyreadr.read_r(sample_filepath)[None]
 
-    print("HEAD")
-    print(df.head())
-
     from_array, to_array = add_bins(bin_offset, df)
     df['target_count'] = 1
-
-    print("HEAD with BINS")
-    print(df.head())
-    print("TAIL with BINS")
-    print(df.tail())
-    print()
 
     df.drop(['seqnames', 'start', 'end', 'CG_ID'], axis=1, inplace=True)
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
     sumos.drop(columns=other_signals, axis=1, inplace=True)
-
-    print("SUMOS")
-    print(sumos[:50])
-    print(sumos.shape)
-    print(sumos.dtypes)
 
     ranges = read_ranges.get_ranges(from_array, to_array)
     print("sumos ilgis:", len(sumos))
@@ -217,7 +151,6 @@ def algo_prototypes(gamma = 1, n_clusters = 2, bin_offset = 0):
     sumos_features = pd.concat([sumos.reset_index(drop=True), ranges.reset_index(drop=True)], axis=1)
     model_input = sumos_features.copy()
     model_input.drop(['target_count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
-    print(model_input)
 
     # Skaičiuojam
     kprotos = KPrototypes(n_clusters=n_clusters, gamma=gamma, verbose=1)
@@ -238,28 +171,14 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
 
     df = pyreadr.read_r(sample_filepath)[None]
 
-    print("HEAD")
-    print(df.head())
-
     from_array, to_array = add_bins(bin_offset, df)
     df['target_count'] = 1
-
-    print("HEAD with BINS")
-    print(df.head())
-    print("TAIL with BINS")
-    print(df.tail())
-    print()
 
     df.drop(['seqnames', 'start', 'end', 'CG_ID'], axis=1, inplace=True)
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
     sumos.drop(columns=other_signals, axis=1, inplace=True)
-
-    print("SUMOS")
-    print(sumos[:50])
-    print(sumos.shape)
-    print(sumos.dtypes)
 
     ranges = read_ranges.get_ranges(from_array, to_array)
     print("sumos ilgis:", len(sumos))
@@ -276,7 +195,6 @@ def algo_dbscan(eps = 0.01, min_samples = 6, bin_offset = 0):
     for i in range(batch_no):
         model_input = sumos_features.copy()[start_index:end_index]
         model_input.drop(['target_count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
-        print(model_input)
 
         # Skaičiuojam
         print("Length of input:", len(model_input))
@@ -311,28 +229,14 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
 
     df = pyreadr.read_r(sample_filepath)[None]
 
-    print("HEAD")
-    print(df.head())
-
     from_array, to_array = add_bins(bin_offset, df)
     df['target_count'] = 1
-
-    print("HEAD with BINS")
-    print(df.head())
-    print("TAIL with BINS")
-    print(df.tail())
-    print()
 
     df.drop(['seqnames', 'start', 'end', 'CG_ID'], axis=1, inplace=True)
     sumos = df.groupby('bin_offset_' + str(bin_offset)).sum().reset_index()
     sumos['starting_nt'] = sumos['bin_offset_' + str(bin_offset)].apply(lambda x: x.left)
 
     sumos.drop(columns=other_signals, axis=1, inplace=True)
-
-    print("SUMOS")
-    print(sumos[:50])
-    print(sumos.shape)
-    print(sumos.dtypes)
 
     ranges = read_ranges.get_ranges(from_array, to_array)
     print("sumos ilgis:", len(sumos))
@@ -351,7 +255,6 @@ def algo_dbscan_aggregated(eps = 0.01, min_samples = 6, threshold = 1.5, bin_off
         batch = sumos_features.copy()[start_index:end_index]
         model_input = batch.copy()
         model_input.drop(['target_count', 'starting_nt', 'Chromosome', 'Start', 'End', 'bin_offset_' + str(bin_offset)], axis=1, inplace=True)
-        print(model_input)
 
         # Skaičiuojam
         print("Length of input:", len(model_input))
