@@ -4,7 +4,7 @@ import pandas as pd
 import generate_consensus
 
 ITERATIONS = 10
-FILEPATH = '../outputs/sresults_dbscan.csv'
+FILEPATH = '../outputs/zresults_dbscan.tsv'
 
 thresholds = [1, 1.5, 2, 2.5, 3]
 

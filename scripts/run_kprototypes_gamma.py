@@ -4,7 +4,7 @@ import pandas as pd
 import generate_consensus
 
 ITERATIONS = 10
-FILEPATH = '../outputs/sresults_kprototypes_gamma.csv'
+FILEPATH = '../outputs/zresults_kprototypes_gamma.tsv'
 
 thresholds = [2, 3]
 

@@ -4,7 +4,7 @@ import pandas as pd
 import generate_consensus
 
 ITERATIONS = 8
-FILEPATH = '../outputs/sresults_kprototypes.csv'
+FILEPATH = '../outputs/zresults_kprototypes.tsv'
 
 thresholds = [1, 1.5, 2, 2.5, 3]
 n_clusters_list = [2, 4]
