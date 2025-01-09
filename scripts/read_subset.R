@@ -1,4 +1,4 @@
-t1 <- readRDS("../inputs/subset1.rds")
+t1 <- readRDS("../inputs/subset2.rds")
 head(t1)
 tail(t1)
 
@@ -11,3 +11,4 @@ max_start <- max(t1$start)
 
 cat("\nMinimum start: ", min_start)
 cat("\nMaximum start: ", max_start)
+cat("\nSUM TT_S0: ", sum(t1$TT_S0))
