@@ -5,5 +5,5 @@
 
 set -x
 date
-srun python3 run_kprototypes.py
+srun python3 run_kprototypes_final.py
 date

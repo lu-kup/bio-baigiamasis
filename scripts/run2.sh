@@ -5,5 +5,5 @@
 
 set -x
 date
-srun python3 run_kmeans.py
+srun python3 run_kmeans_final.py
 date
