@@ -5,16 +5,16 @@ CHR_SIZES_GRCm38 = {
     "5": 151834684, "6": 149736546, "7": 145441459, "8": 129401213,
     "9": 124595110, "10": 130694993, "11": 122082543, "12": 120129022,
     "13": 120421639, "14": 124902244, "15": 104043685, "16": 98810272,
-    "17": 93617343, "18": 90153841, "19": 61026292, "X": 171031299,
+    "17": 94987271, "18": 90153841, "19": 61026292, "X": 171031299,
     "Y": 91000000, "MT": 16299
 }
 
 # Chromosome
-CHR = '18'
+CHR = '17'
 
 # Inputs
-SAMPLE_FILEPATH = '../inputs/subset2.rds'
-GENCODE_DATA_PATH = "../inputs/gencode_chr18_M25.gtf"
+SAMPLE_FILEPATH = '../inputs/subset17.rds'
+GENCODE_DATA_PATH = "../inputs/gencode_chr17_M25.gtf"
 
 # Signal columns
 SIGNAL_COLUMN = 'TT_S0'

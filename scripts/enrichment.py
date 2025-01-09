@@ -5,11 +5,11 @@ import numpy as np
 import config
 
 SIGNAL_COLUMN = config.SIGNAL_COLUMN
+sample_filepath = config.SAMPLE_FILEPATH
 
 def calculate_norm_signal(ranges, targets_df):
     ranges = ranges.sort()
     targets_df['target_count'] = 1
-    
 
     from_array_open = list(ranges.df['Start'])
     to_array_open = list(ranges.df['End'])
@@ -42,7 +42,8 @@ def get_post_regions(ranges):
 
     return post_regions
 
-def calculate_enrichment_factors(ranges, targets_df):
+def calculate_enrichment_factors(ranges):
+    targets_df = pyreadr.read_r(sample_filepath)[None]
     ranges_signal = calculate_norm_signal(ranges, targets_df)
     
     pre_signal = calculate_norm_signal(get_pre_regions(ranges), targets_df)
