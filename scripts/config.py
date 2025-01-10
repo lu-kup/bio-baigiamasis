@@ -10,11 +10,11 @@ CHR_SIZES_GRCm38 = {
 }
 
 # Chromosome
-CHR = '17'
+CHR = '18'
 
 # Inputs
-SAMPLE_FILEPATH = '../inputs/subset17.rds'
-GENCODE_DATA_PATH = "../inputs/gencode_chr17_M25.gtf"
+SAMPLE_FILEPATH = '../inputs/subset2.rds'
+GENCODE_DATA_PATH = "../inputs/gencode_chr18_M25.gtf"
 
 # Signal columns
 SIGNAL_COLUMN = 'TT_S0'
