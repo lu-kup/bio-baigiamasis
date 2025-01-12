@@ -11,14 +11,8 @@ CHR_SIZES_GRCm38 = {
 
 # Chromosome
 CHR = '18'
-
-# Inputs
 SAMPLE_FILEPATH = '../inputs/subset2.rds'
 GENCODE_DATA_PATH = "../inputs/gencode_chr18_M25.gtf"
-
-# Signal columns
-SIGNAL_COLUMN = 'TT_S0'
-OTHER_SIGNALS = ['TT_S1', 'TT_S2']
 
 # Subset size
 CHR_SIZE = CHR_SIZES_GRCm38[CHR]
