@@ -10,9 +10,9 @@ CHR_SIZES_GRCm38 = {
 }
 
 # Chromosome
-CHR = '2'
-SAMPLE_FILEPATH = '../inputs/subset_chr2.rds'
-GENCODE_DATA_PATH = "../inputs/gencode_chr2_M25.gtf"
+CHR = '12'
+SAMPLE_FILEPATH = '../inputs/subset_chr12.rds'
+GENCODE_DATA_PATH = "../inputs/gencode_chr12_M25.gtf"
 
 # Subset size
 CHR_SIZE = CHR_SIZES_GRCm38[CHR]
