@@ -1,4 +1,4 @@
-Chromosome	Start	End	width	strand	study
+Chromosome	Start	End	width	Strand	study
 1	3062536	3063132	597	*	ATACseq
 1	3482735	3483063	329	*	ATACseq
 1	3549538	3549654	117	*	ATACseq
