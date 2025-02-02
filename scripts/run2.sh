@@ -5,5 +5,5 @@
 
 set -x
 date
-srun python3 run_kmeans_expression.py TT_S1
+srun python3 run_dbscan_final.py
 date
