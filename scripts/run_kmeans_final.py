@@ -5,7 +5,7 @@ import pandas as pd
 import generate_consensus
 import pyreadr
 
-out = generate_consensus.generate_consensus_5x20(chromatin_algos.algo5d_aggregated, [256, 8, 2])
+out = generate_consensus.generate_consensus_5x20(chromatin_algos.algo5d_aggregated, [256, 8, 2, 'TT_S0'])
 out.to_csv('../outputs/final4/ranges_kmeans.csv', sep = '\t')
 
 evaluation = evaluator.evaluate(merged_ranges = out, model_name="k-means")

@@ -5,7 +5,7 @@ import pandas as pd
 import generate_consensus
 import pyreadr
 
-out = generate_consensus.generate_consensus_5x20(chromatin_algos.algo_prototypes_aggregated, [1, 4, 1.5])
+out = generate_consensus.generate_consensus_5x20(chromatin_algos.algo_prototypes_aggregated, [1, 4, 1.5, 'TT_S0'])
 out.to_csv('../outputs/final4/ranges_kprototypes.csv', sep = '\t')
 
 evaluation = evaluator.evaluate(merged_ranges = out, model_name="k-prototypes")
